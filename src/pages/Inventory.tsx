@@ -12,19 +12,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AddInventoryItemForm from "@/components/AddInventoryItemForm";
+import EditInventoryItemForm from "@/components/EditInventoryItemForm"; // Import the new edit form
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { showSuccess, showError } from "@/utils/toast";
-import { Trash2 } from "lucide-react"; // Import icon
+import { Trash2, Pencil } from "lucide-react"; // Import Pencil icon
 
 const Inventory = () => {
   const { data: inventoryItems, isLoading, error, refetch } = useInventoryItems();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const queryClient = useQueryClient();
 
   const handleItemAdded = () => {
     refetch(); // Refresh the list after adding an item
-    setIsDialogOpen(false); // Close the dialog
+    setIsAddDialogOpen(false); // Close the add dialog
+  };
+
+  const handleItemEdited = () => {
+    refetch(); // Refresh the list after editing an item
+    setIsEditDialogOpen(false); // Close the edit dialog
+    setSelectedItem(null); // Clear selected item
   };
 
   const deleteItemMutation = useMutation({
@@ -54,6 +63,11 @@ const Inventory = () => {
     }
   };
 
+  const handleEdit = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setIsEditDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div>
@@ -76,7 +90,7 @@ const Inventory = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Cabin Inventory</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>Add Item</Button>
           </DialogTrigger>
@@ -89,6 +103,19 @@ const Inventory = () => {
         </Dialog>
       </div>
 
+      {/* Edit Dialog */}
+      {selectedItem && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Inventory Item</DialogTitle>
+            </DialogHeader>
+            <EditInventoryItemForm item={selectedItem} onSuccess={handleItemEdited} />
+          </DialogContent>
+        </Dialog>
+      )}
+
+
       {inventoryItems && inventoryItems.length > 0 ? (
         <Table>
           <TableHeader>
@@ -97,7 +124,7 @@ const Inventory = () => {
               <TableHead>Type</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>State</TableHead>
-              <TableHead className="text-right">Actions</TableHead> {/* Added Actions column */}
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -107,7 +134,14 @@ const Inventory = () => {
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{item.quantity ?? '-'}</TableCell>
                 <TableCell>{item.state ?? '-'}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                  <Button
+                    variant="outline" // Use outline variant for edit
+                    size="icon"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="destructive"
                     size="icon"
