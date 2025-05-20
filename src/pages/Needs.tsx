@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNeedsItems } from "@/hooks/use-needs-items";
 import {
   Table,
@@ -9,9 +10,18 @@ import {
 }
 from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import AddNeedsItemForm from "@/components/AddNeedsItemForm"; // We will create this next
 
 const Needs = () => {
-  const { data: needsItems, isLoading, error } = useNeedsItems();
+  const { data: needsItems, isLoading, error, refetch } = useNeedsItems();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleItemAdded = () => {
+    refetch(); // Refresh the list after adding an item
+    setIsDialogOpen(false); // Close the dialog
+  };
 
   if (isLoading) {
     return (
@@ -33,7 +43,21 @@ const Needs = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Cabin Needs List</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Cabin Needs List</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Add Item</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Need Item</DialogTitle>
+            </DialogHeader>
+            <AddNeedsItemForm onSuccess={handleItemAdded} />
+          </DialogContent>
+        </Dialog>
+      </div>
+
       {needsItems && needsItems.length > 0 ? (
         <Table>
           <TableHeader>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useBudgetItems } from "@/hooks/use-budget-items";
 import {
   Table,
@@ -8,9 +9,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import AddBudgetItemForm from "@/components/AddBudgetItemForm"; // We will create this next
 
 const Budget = () => {
-  const { data: budgetItems, isLoading, error } = useBudgetItems();
+  const { data: budgetItems, isLoading, error, refetch } = useBudgetItems();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleItemAdded = () => {
+    refetch(); // Refresh the list after adding an item
+    setIsDialogOpen(false); // Close the dialog
+  };
 
   if (isLoading) {
     return (
@@ -32,7 +42,21 @@ const Budget = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Cabin Budget Tracker</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Cabin Budget Tracker</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Add Item</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Budget Item</DialogTitle>
+            </DialogHeader>
+            <AddBudgetItemForm onSuccess={handleItemAdded} />
+          </DialogContent>
+        </Dialog>
+      </div>
+
       {budgetItems && budgetItems.length > 0 ? (
         <Table>
           <TableHeader>

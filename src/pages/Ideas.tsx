@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useIdeasItems } from "@/hooks/use-ideas-items";
 import {
   Table,
@@ -8,9 +9,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import AddIdeasItemForm from "@/components/AddIdeasItemForm"; // We will create this next
 
 const Ideas = () => {
-  const { data: ideasItems, isLoading, error } = useIdeasItems();
+  const { data: ideasItems, isLoading, error, refetch } = useIdeasItems();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleItemAdded = () => {
+    refetch(); // Refresh the list after adding an item
+    setIsDialogOpen(false); // Close the dialog
+  };
 
   if (isLoading) {
     return (
@@ -32,7 +42,21 @@ const Ideas = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Cabin Ideas List</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Cabin Ideas List</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Add Idea</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Idea Item</DialogTitle>
+            </DialogHeader>
+            <AddIdeasItemForm onSuccess={handleItemAdded} />
+          </DialogContent>
+        </Dialog>
+      </div>
+
       {ideasItems && ideasItems.length > 0 ? (
         <Table>
           <TableHeader>
