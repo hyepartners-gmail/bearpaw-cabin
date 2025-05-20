@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useInventoryItems } from "@/hooks/use-inventory-items";
+import { useInventoryItems, InventoryItem } from "@/hooks/use-inventory-items";
 import {
   Table,
   TableBody,
@@ -11,15 +11,47 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import AddInventoryItemForm from "@/components/AddInventoryItemForm"; // We will create this next
+import AddInventoryItemForm from "@/components/AddInventoryItemForm";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { showSuccess, showError } from "@/utils/toast";
+import { Trash2 } from "lucide-react"; // Import icon
 
 const Inventory = () => {
   const { data: inventoryItems, isLoading, error, refetch } = useInventoryItems();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleItemAdded = () => {
     refetch(); // Refresh the list after adding an item
     setIsDialogOpen(false); // Close the dialog
+  };
+
+  const deleteItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase
+        .from('inventory_items')
+        .delete()
+        .eq('id', itemId);
+
+      if (error) {
+        console.error("Error deleting inventory item:", error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
+      showSuccess("Inventory item deleted successfully!");
+    },
+    onError: (error) => {
+      showError(`Failed to delete inventory item: ${error.message}`);
+    },
+  });
+
+  const handleDelete = (item: InventoryItem) => {
+    if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
+      deleteItemMutation.mutate(item.id);
+    }
   };
 
   if (isLoading) {
@@ -65,6 +97,7 @@ const Inventory = () => {
               <TableHead>Type</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>State</TableHead>
+              <TableHead className="text-right">Actions</TableHead> {/* Added Actions column */}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -74,6 +107,16 @@ const Inventory = () => {
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{item.quantity ?? '-'}</TableCell>
                 <TableCell>{item.state ?? '-'}</TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => handleDelete(item)}
+                    disabled={deleteItemMutation.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
