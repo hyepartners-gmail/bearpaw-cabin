@@ -12,19 +12,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AddBudgetItemForm from "@/components/AddBudgetItemForm";
+import EditBudgetItemForm from "@/components/EditBudgetItemForm"; // Import the new edit form
 import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import mutation hooks
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
-import { Trash2 } from "lucide-react"; // Import icon
+import { Trash2, Pencil } from "lucide-react"; // Import icons
 
 const Budget = () => {
   const { data: budgetItems, isLoading, error, refetch } = useBudgetItems();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<BudgetItem | null>(null);
   const queryClient = useQueryClient(); // Get query client
 
   const handleItemAdded = () => {
     refetch(); // Refresh the list after adding an item
-    setIsDialogOpen(false); // Close the dialog
+    setIsAddDialogOpen(false); // Close the add dialog
+  };
+
+  const handleItemEdited = () => {
+    refetch(); // Refresh the list after editing an item
+    setIsEditDialogOpen(false); // Close the edit dialog
+    setSelectedItem(null); // Clear selected item
   };
 
   const deleteItemMutation = useMutation({
@@ -54,6 +63,11 @@ const Budget = () => {
     }
   };
 
+  const handleEdit = (item: BudgetItem) => {
+    setSelectedItem(item);
+    setIsEditDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div>
@@ -76,7 +90,7 @@ const Budget = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Cabin Budget Tracker</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>Add Item</Button>
           </DialogTrigger>
@@ -88,6 +102,18 @@ const Budget = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Edit Dialog */}
+      {selectedItem && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Budget Item</DialogTitle>
+            </DialogHeader>
+            <EditBudgetItemForm item={selectedItem} onSuccess={handleItemEdited} />
+          </DialogContent>
+        </Dialog>
+      )}
 
       {budgetItems && budgetItems.length > 0 ? (
         <Table>
@@ -105,7 +131,14 @@ const Budget = () => {
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>${item.cost.toFixed(2)}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                  <Button
+                    variant="outline" // Use outline variant for edit
+                    size="icon"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="destructive"
                     size="icon"

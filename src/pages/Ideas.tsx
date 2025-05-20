@@ -12,19 +12,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AddIdeasItemForm from "@/components/AddIdeasItemForm";
+import EditIdeasItemForm from "@/components/EditIdeasItemForm"; // Import the new edit form
 import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import mutation hooks
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
-import { Trash2 } from "lucide-react"; // Import icon
+import { Trash2, Pencil } from "lucide-react"; // Import icons
 
 const Ideas = () => {
   const { data: ideasItems, isLoading, error, refetch } = useIdeasItems();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<IdeasItem | null>(null);
   const queryClient = useQueryClient(); // Get query client
 
   const handleItemAdded = () => {
     refetch(); // Refresh the list after adding an item
-    setIsDialogOpen(false); // Close the dialog
+    setIsAddDialogOpen(false); // Close the add dialog
+  };
+
+  const handleItemEdited = () => {
+    refetch(); // Refresh the list after editing an item
+    setIsEditDialogOpen(false); // Close the edit dialog
+    setSelectedItem(null); // Clear selected item
   };
 
   const deleteItemMutation = useMutation({
@@ -54,6 +63,11 @@ const Ideas = () => {
     }
   };
 
+  const handleEdit = (item: IdeasItem) => {
+    setSelectedItem(item);
+    setIsEditDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div>
@@ -76,7 +90,7 @@ const Ideas = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Cabin Ideas List</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>Add Idea</Button>
           </DialogTrigger>
@@ -88,6 +102,18 @@ const Ideas = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Edit Dialog */}
+      {selectedItem && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Idea Item</DialogTitle>
+            </DialogHeader>
+            <EditIdeasItemForm item={selectedItem} onSuccess={handleItemEdited} />
+          </DialogContent>
+        </Dialog>
+      )}
 
       {ideasItems && ideasItems.length > 0 ? (
         <Table>
@@ -101,7 +127,14 @@ const Ideas = () => {
             {ideasItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                  <Button
+                    variant="outline" // Use outline variant for edit
+                    size="icon"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="destructive"
                     size="icon"
