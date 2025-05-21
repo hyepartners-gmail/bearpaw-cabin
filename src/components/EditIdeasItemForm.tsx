@@ -21,6 +21,10 @@ const formSchema = z.object({
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
+  price: z.preprocess( // Added price to schema
+    (val) => (val === "" ? null : Number(val)),
+    z.nullable(z.number().positive("Price must be a positive number.")).optional()
+  ),
 });
 
 interface EditIdeasItemFormProps {
@@ -35,6 +39,7 @@ const EditIdeasItemForm: React.FC<EditIdeasItemFormProps> = ({ item, onSuccess }
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: item.description,
+      price: item.price, // Set default price from item
     },
   });
 
@@ -42,7 +47,7 @@ const EditIdeasItemForm: React.FC<EditIdeasItemFormProps> = ({ item, onSuccess }
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from('ideas_items')
-        .update(values)
+        .update(values) // values now includes price
         .eq('id', item.id); // Update the specific item by ID
 
       if (error) {
@@ -77,6 +82,19 @@ const EditIdeasItemForm: React.FC<EditIdeasItemFormProps> = ({ item, onSuccess }
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Add a fire pit" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField // Added price input field
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price (Optional)</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" placeholder="e.g., 500.00" {...field} value={field.value ?? ''} />
               </FormControl>
               <FormMessage />
             </FormItem>

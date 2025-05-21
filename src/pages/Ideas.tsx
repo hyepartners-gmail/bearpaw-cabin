@@ -120,16 +120,18 @@ const Ideas = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Description</TableHead>
-              <TableHead className="text-right">Actions</TableHead> {/* Added Actions column */}
+              <TableHead>Price</TableHead> {/* Added Price column header */}
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {ideasItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
-                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell> {/* Display price */}
+                <TableCell className="text-right flex justify-end space-x-2">
                   <Button
-                    variant="outline" // Use outline variant for edit
+                    variant="outline"
                     size="icon"
                     onClick={() => handleEdit(item)}
                   >

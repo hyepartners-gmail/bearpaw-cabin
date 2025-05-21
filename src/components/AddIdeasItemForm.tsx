@@ -20,6 +20,10 @@ const formSchema = z.object({
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
+  price: z.preprocess( // Added price to schema
+    (val) => (val === "" ? null : Number(val)),
+    z.nullable(z.number().positive("Price must be a positive number.")).optional()
+  ),
 });
 
 interface AddIdeasItemFormProps {
@@ -33,6 +37,7 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: "",
+      price: null, // Default price to null
     },
   });
 
@@ -40,7 +45,7 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from('ideas_items')
-        .insert([values]);
+        .insert([values]); // values now includes price
 
       if (error) {
         console.error("Error inserting ideas item:", error);
@@ -74,6 +79,19 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Add a fire pit" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField // Added price input field
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price (Optional)</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" placeholder="e.g., 500.00" {...field} value={field.value ?? ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
