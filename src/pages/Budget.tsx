@@ -153,26 +153,31 @@ const Budget = () => {
       </div>
 
       {/* Budget Summaries */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <div className="bg-gray-100 p-4 rounded-md shadow">
+      <div className="mb-8"> {/* Container for summaries */}
+        {/* Yearly Total */}
+        <div className="bg-gray-100 p-4 rounded-md shadow w-full mb-4"> {/* Full width and margin bottom */}
           <h3 className="text-lg font-semibold">Yearly Total ({currentYear})</h3>
           <p className="text-2xl font-bold text-blue-600">${yearlyTotal.toFixed(2)}</p>
         </div>
-        <div className="bg-gray-100 p-4 rounded-md shadow">
-          <h3 className="text-lg font-semibold">Q1 Total</h3>
-          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[1].toFixed(2)}</p>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-md shadow">
-          <h3 className="text-lg font-semibold">Q2 Total</h3>
-          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[2].toFixed(2)}</p>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-md shadow">
-          <h3 className="text-lg font-semibold">Q3 Total</h3>
-          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[3].toFixed(2)}</p>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-md shadow">
-          <h3 className="text-lg font-semibold">Q4 Total</h3>
-          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[4].toFixed(2)}</p>
+
+        {/* Quarterly Totals - Stacked */}
+        <div className="grid grid-cols-1 gap-4"> {/* Grid with 1 column for stacking */}
+          <div className="bg-gray-100 p-4 rounded-md shadow">
+            <h3 className="text-lg font-semibold">Q1 Total</h3>
+            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[1].toFixed(2)}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded-md shadow">
+            <h3 className="text-lg font-semibold">Q2 Total</h3>
+            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[2].toFixed(2)}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded-md shadow">
+            <h3 className="text-lg font-semibold">Q3 Total</h3>
+            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[3].toFixed(2)}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded-md shadow">
+            <h3 className="text-lg font-semibold">Q4 Total</h3>
+            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[4].toFixed(2)}</p>
+          </div>
         </div>
       </div>
 
