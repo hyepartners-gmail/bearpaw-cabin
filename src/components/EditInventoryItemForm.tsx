@@ -34,7 +34,6 @@ const formSchema = z.object({
     (val) => (val === "" ? null : Number(val)),
     z.nullable(z.number().int().positive("Quantity must be a positive integer.")).optional()
   ),
-  // Updated state validation to be an enum or null
   state: z.enum(["Clean", "Dirty", "Good", "Broken"]).nullable().optional(),
   replacement_date: z.date().nullable().optional(),
 });
@@ -51,9 +50,9 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: item.name,
-      type: item.type,
+      type: item.type, // Use the item's existing type
       quantity: item.quantity,
-      state: item.state, // Use existing state value
+      state: item.state,
       replacement_date: item.replacement_date ? new Date(item.replacement_date) : null,
     },
   });
@@ -116,7 +115,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}> {/* Changed defaultValue to value */}
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select item type" />
@@ -193,7 +192,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ''}> {/* Changed defaultValue to value and handle null */}
+                <Select onValueChange={field.onChange} value={field.value ?? ''}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
