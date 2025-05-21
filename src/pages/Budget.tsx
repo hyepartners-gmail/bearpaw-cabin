@@ -235,8 +235,7 @@ const Budget = () => {
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>${item.cost.toFixed(2)}</TableCell>
-                <TableCell>{item.payment_date ? format(new Date(item.payment_date), 'PPP') : '-'}</TableCell> {/* Display payment date */}
-                {/* Ensure no extra whitespace between TableCell tags */}
+                <TableCell>{item.payment_date ? format(new Date(item.payment_date), 'PPP') : '-'}</TableCell>
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"

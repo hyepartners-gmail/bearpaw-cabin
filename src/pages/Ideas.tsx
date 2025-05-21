@@ -130,8 +130,7 @@ const Ideas = () => {
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
                 <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell>
-                <TableCell>{item.notes ?? '-'}</TableCell> {/* Display notes */}
-                {/* Ensure no extra whitespace between TableCell tags */}
+                <TableCell>{item.notes ?? '-'}</TableCell>
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"

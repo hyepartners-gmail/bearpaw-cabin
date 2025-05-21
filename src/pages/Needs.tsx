@@ -130,7 +130,7 @@ const Needs = () => {
             {needsItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
-                <TableCell>{item.quantity}</TableCell> {/* Display quantity */}
+                <TableCell>{item.quantity}</TableCell>
                 <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell>
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
