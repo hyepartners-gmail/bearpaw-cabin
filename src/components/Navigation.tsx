@@ -6,32 +6,32 @@ const Navigation = () => {
     <nav className="w-full bg-gray-100 p-4 shadow-md">
       <ul className="flex flex-wrap justify-center gap-2 md:gap-4"> {/* Added flex-wrap and gap for better spacing */}
         <li>
-          <Button variant="ghost" asChild className="lg:text-lg"> {/* Added lg:text-lg */}
+          <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/inventory">Inventory</Link>
           </Button>
         </li>
         <li>
-          <Button variant="ghost" asChild className="lg:text-lg"> {/* Added lg:text-lg */}
+          <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/tools">Tools</Link>
           </Button>
         </li>
         <li>
-          <Button variant="ghost" asChild className="lg:text-lg"> {/* Added lg:text-lg */}
+          <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/movies-games">Movies & Games</Link>
           </Button>
         </li>
         <li>
-          <Button variant="ghost" asChild className="lg:text-lg"> {/* Added lg:text-lg */}
+          <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/ideas">Ideas</Link>
           </Button>
         </li>
         <li>
-          <Button variant="ghost" asChild className="lg:text-lg"> {/* Added lg:text-lg */}
+          <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/needs">Needs</Link>
           </Button>
         </li>
         <li>
-          <Button variant="ghost" asChild className="lg:text-lg"> {/* Added lg:text-lg */}
+          <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/budget">Budget</Link>
           </Button>
         </li>
