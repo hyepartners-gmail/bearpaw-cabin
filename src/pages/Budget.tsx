@@ -160,8 +160,8 @@ const Budget = () => {
           <p className="text-2xl font-bold text-blue-600">${yearlyTotal.toFixed(2)}</p>
         </div>
 
-        {/* Quarterly Totals - Stacked */}
-        <div className="grid grid-cols-1 gap-4"> {/* Grid with 1 column for stacking */}
+        {/* Quarterly Totals - 4 in a row on larger screens */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> {/* Grid with 1 column on small, 2 on medium, 4 on large */}
           <div className="bg-gray-100 p-4 rounded-md shadow">
             <h3 className="text-lg font-semibold">Q1 Total</h3>
             <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[1].toFixed(2)}</p>
