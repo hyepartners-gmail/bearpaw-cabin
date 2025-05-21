@@ -33,8 +33,9 @@ const formSchema = z.object({
     (val) => (val === "" ? null : Number(val)),
     z.nullable(z.number().int().positive("Quantity must be a positive integer.")).optional()
   ),
-  state: z.string().nullable().optional(),
-  replacement_date: z.date().nullable().optional(), // Added replacement_date field
+  // Updated state validation to be an enum or null
+  state: z.enum(["Clean", "Dirty", "Good", "Broken"]).nullable().optional(),
+  replacement_date: z.date().nullable().optional(),
 });
 
 interface AddInventoryItemFormProps {
@@ -48,14 +49,14 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: undefined, // Use undefined for initial state of select
+      type: undefined,
       quantity: null,
-      state: null,
-      replacement_date: null, // Default to null
+      state: null, // Default state to null
+      replacement_date: null,
     },
   });
 
-  const { type } = form.watch(); // Watch the type field to conditionally render quantity/state/date
+  const { type } = form.watch(); // Watch the type field
 
   const addItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -66,8 +67,8 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
             name: values.name,
             type: values.type,
             quantity: values.type === 'consumable' ? values.quantity : null,
-            state: values.type === 'non-consumable' ? values.state : null,
-            replacement_date: values.type === 'consumable' && values.replacement_date ? format(values.replacement_date, 'yyyy-MM-dd') : null, // Format date for Supabase
+            state: values.type === 'non-consumable' ? values.state : null, // Only save state for non-consumable
+            replacement_date: values.type === 'consumable' && values.replacement_date ? format(values.replacement_date, 'yyyy-MM-dd') : null,
           },
         ]);
 
@@ -80,7 +81,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
       showSuccess("Inventory item added successfully!");
-      onSuccess(); // Call the onSuccess prop to close dialog and refetch
+      onSuccess();
     },
     onError: (error) => {
       showError(`Failed to add inventory item: ${error.message}`);
@@ -191,9 +192,19 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Clean, Dirty, Good, Broken" {...field} value={field.value ?? ''} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Clean">Clean</SelectItem>
+                    <SelectItem value="Dirty">Dirty</SelectItem>
+                    <SelectItem value="Good">Good</SelectItem>
+                    <SelectItem value="Broken">Broken</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

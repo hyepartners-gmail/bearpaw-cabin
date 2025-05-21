@@ -34,8 +34,9 @@ const formSchema = z.object({
     (val) => (val === "" ? null : Number(val)),
     z.nullable(z.number().int().positive("Quantity must be a positive integer.")).optional()
   ),
-  state: z.string().nullable().optional(),
-  replacement_date: z.date().nullable().optional(), // Added replacement_date field
+  // Updated state validation to be an enum or null
+  state: z.enum(["Clean", "Dirty", "Good", "Broken"]).nullable().optional(),
+  replacement_date: z.date().nullable().optional(),
 });
 
 interface EditInventoryItemFormProps {
@@ -52,13 +53,12 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
       name: item.name,
       type: item.type,
       quantity: item.quantity,
-      state: item.state,
-      // Convert string date from Supabase to Date object for the form
+      state: item.state, // Use existing state value
       replacement_date: item.replacement_date ? new Date(item.replacement_date) : null,
     },
   });
 
-  const { type } = form.watch(); // Watch the type field to conditionally render quantity/state/date
+  const { type } = form.watch(); // Watch the type field
 
   const updateItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -68,8 +68,8 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
           name: values.name,
           type: values.type,
           quantity: values.type === 'consumable' ? values.quantity : null,
-          state: values.type === 'non-consumable' ? values.state : null,
-          replacement_date: values.type === 'consumable' && values.replacement_date ? format(values.replacement_date, 'yyyy-MM-dd') : null, // Format date for Supabase
+          state: values.type === 'non-consumable' ? values.state : null, // Only save state for non-consumable
+          replacement_date: values.type === 'consumable' && values.replacement_date ? format(values.replacement_date, 'yyyy-MM-dd') : null,
         })
         .eq('id', item.id); // Update the specific item by ID
 
@@ -82,7 +82,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
       showSuccess("Inventory item updated successfully!");
-      onSuccess(); // Call the onSuccess prop to close dialog and refetch
+      onSuccess();
     },
     onError: (error) => {
       showError(`Failed to update inventory item: ${error.message}`);
@@ -193,9 +193,19 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Clean, Dirty, Good, Broken" {...field} value={field.value ?? ''} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Clean">Clean</SelectItem>
+                    <SelectItem value="Dirty">Dirty</SelectItem>
+                    <SelectItem value="Good">Good</SelectItem>
+                    <SelectItem value="Broken">Broken</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
