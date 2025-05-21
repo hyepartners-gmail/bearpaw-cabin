@@ -35,6 +35,11 @@ const Navigation = () => {
             <Link to="/budget">Budget</Link>
           </Button>
         </li>
+         <li>
+          <Button variant="ghost" asChild className="lg:text-lg">
+            <Link to="/projections">Projections</Link> {/* Added Projections link */}
+          </Button>
+        </li>
       </ul>
     </nav>
   );
