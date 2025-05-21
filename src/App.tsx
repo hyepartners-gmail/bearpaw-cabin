@@ -8,6 +8,8 @@ import Inventory from "./pages/Inventory"; // Import Inventory page
 import Needs from "./pages/Needs"; // Import Needs page
 import Ideas from "./pages/Ideas"; // Import Ideas page
 import Budget from "./pages/Budget"; // Import Budget page
+import MoviesGames from "./pages/MoviesGames"; // Import MoviesGames page
+import Tools from "./pages/Tools"; // Import Tools page
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/needs" element={<Needs />} />
             <Route path="/ideas" element={<Ideas />} />
             <Route path="/budget" element={<Budget />} />
+            <Route path="/movies-games" element={<MoviesGames />} /> {/* Add Movies & Games route */}
+            <Route path="/tools" element={<Tools />} /> {/* Add Tools route */}
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

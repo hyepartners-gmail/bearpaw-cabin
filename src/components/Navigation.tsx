@@ -25,6 +25,16 @@ const Navigation = () => {
             <Link to="/budget">Budget</Link>
           </Button>
         </li>
+        <li>
+          <Button variant="ghost" asChild>
+            <Link to="/movies-games">Movies & Games</Link>
+          </Button>
+        </li>
+        <li>
+          <Button variant="ghost" asChild>
+            <Link to="/tools">Tools</Link>
+          </Button>
+        </li>
       </ul>
     </nav>
   );
