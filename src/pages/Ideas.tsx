@@ -92,7 +92,8 @@ const Ideas = () => {
         <h1 className="text-2xl font-bold">Cabin Ideas List</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Idea</Button> {/* Added brown color classes */}
+            {/* Ensure only the Button is inside DialogTrigger */}
+            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Idea</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -131,6 +132,7 @@ const Ideas = () => {
                 <TableCell className="font-medium">{item.description}</TableCell>
                 <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell>
                 <TableCell>{item.notes ?? '-'}</TableCell> {/* Display notes */}
+                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"

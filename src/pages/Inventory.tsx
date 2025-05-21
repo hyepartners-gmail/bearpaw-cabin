@@ -96,7 +96,8 @@ const Inventory = () => {
         <h1 className="text-2xl font-bold">Cabin Inventory</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button> {/* Added brown color classes */}
+            {/* Ensure only the Button is inside DialogTrigger */}
+            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -141,6 +142,7 @@ const Inventory = () => {
                     ? format(new Date(item.replacement_date), 'PPP')
                     : '-'}
                 </TableCell>
+                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"
@@ -182,6 +184,7 @@ const Inventory = () => {
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.state ?? '-'}</TableCell>
+                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"

@@ -93,7 +93,8 @@ const Needs = () => {
         <h1 className="text-2xl font-bold">Cabin Needs List</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button> {/* Added brown color classes */}
+            {/* Ensure only the Button is inside DialogTrigger */}
+            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -122,7 +123,7 @@ const Needs = () => {
             <TableRow>
               <TableHead>Description</TableHead>
               <TableHead>Price</TableHead>
-              <TableHead className="text-right">Actions</TableHead> {/* Added Actions column */}
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -130,9 +131,10 @@ const Needs = () => {
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
                 <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell>
-                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                {/* Ensure no extra whitespace between TableCell tags */}
+                <TableCell className="text-right flex justify-end space-x-2">
                   <Button
-                    variant="outline" // Use outline variant for edit
+                    variant="outline"
                     size="icon"
                     onClick={() => handleEdit(item)}
                   >

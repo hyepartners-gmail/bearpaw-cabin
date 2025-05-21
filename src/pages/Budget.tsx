@@ -141,7 +141,8 @@ const Budget = () => {
         <h1 className="text-2xl font-bold">Cabin Budget Tracker</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button> {/* Added brown color classes */}
+            {/* Ensure only the Button is inside DialogTrigger */}
+            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -217,6 +218,7 @@ const Budget = () => {
                 <TableCell>{item.type}</TableCell>
                 <TableCell>${item.cost.toFixed(2)}</TableCell>
                 <TableCell>{item.payment_date ? format(new Date(item.payment_date), 'PPP') : '-'}</TableCell> {/* Display payment date */}
+                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"
