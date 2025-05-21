@@ -17,7 +17,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import m
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
 import { Trash2, Pencil } from "lucide-react"; // Import icons
-import BudgetChart from "@/components/BudgetChart"; // Import BudgetChart
+import BudgetBarChart from "@/components/BudgetBarChart"; // Import BudgetBarChart (renamed)
+import BudgetPieChart from "@/components/BudgetPieChart"; // Import BudgetPieChart
 import { format, getQuarter, getYear } from "date-fns"; // Import date-fns functions
 
 const Budget = () => {
@@ -194,8 +195,10 @@ const Budget = () => {
         </Dialog>
       )}
 
-      {/* Budget Chart */}
-      <BudgetChart />
+      {/* Budget Charts */}
+      <BudgetPieChart /> {/* Added the new pie chart */}
+      <BudgetBarChart /> {/* Kept the existing bar chart */}
+
 
       {/* Budget Items Table */}
       <h2 className="text-xl font-semibold mt-8 mb-2">Budget Items List</h2>
