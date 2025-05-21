@@ -61,6 +61,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
 
   const updateItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+      console.log("Attempting to update item with values:", values); // Log values before update
       const { data, error } = await supabase
         .from('inventory_items')
         .update({
@@ -73,24 +74,35 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
         .eq('id', item.id); // Update the specific item by ID
 
       if (error) {
-        console.error("Error updating inventory item:", error);
+        console.error("Supabase update error:", error); // Log Supabase error
         throw error;
       }
+      console.log("Supabase update successful:", data); // Log Supabase success
       return data;
     },
     onSuccess: () => {
+      console.log("Mutation onSuccess triggered."); // Log mutation success
       queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
       showSuccess("Inventory item updated successfully!");
       onSuccess();
     },
     onError: (error) => {
+      console.error("Mutation onError triggered:", error); // Log mutation error
       showError(`Failed to update inventory item: ${error.message}`);
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with values:", values);
-    updateItemMutation.mutate(values);
+    console.log("Form onSubmit triggered.");
+    console.log("Form values:", values); // Log form values
+    console.log("Form errors:", form.formState.errors); // Log form errors
+    console.log("Form isValid:", form.formState.isValid); // Log validity
+
+    if (form.formState.isValid) {
+      updateItemMutation.mutate(values);
+    } else {
+      console.warn("Form is invalid, not submitting.");
+    }
   }
 
   return (
@@ -192,7 +204,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}> {/* Removed ?? '' */}
+                <Select onValueChange={field.onChange} value={field.value === null ? undefined : field.value}> {/* Handle null as undefined for Select component */}
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />

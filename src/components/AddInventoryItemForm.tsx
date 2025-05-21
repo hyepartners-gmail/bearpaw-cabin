@@ -95,6 +95,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
     console.log("Form onSubmit triggered.");
     console.log("Form values:", values);
     console.log("Form errors:", form.formState.errors);
+    console.log("Form isValid:", form.formState.isValid); // Log validity
 
     if (form.formState.isValid) {
       addItemMutation.mutate(values);
@@ -202,7 +203,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}> {/* Removed ?? '' */}
+                <Select onValueChange={field.onChange} value={field.value === null ? undefined : field.value}> {/* Handle null as undefined for Select component */}
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
