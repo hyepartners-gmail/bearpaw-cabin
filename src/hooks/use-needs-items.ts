@@ -5,13 +5,14 @@ export interface NeedsItem {
   id: string;
   description: string;
   price: number | null;
+  quantity: number; // Added quantity field
   created_at: string;
 }
 
 const fetchNeedsItems = async (): Promise<NeedsItem[]> => {
   const { data, error } = await supabase
     .from('needs_items')
-    .select('*')
+    .select('id, description, price, quantity, created_at') // Select the new quantity column
     .order('created_at', { ascending: false });
 
   if (error) {

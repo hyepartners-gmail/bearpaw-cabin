@@ -25,6 +25,10 @@ const formSchema = z.object({
     (val) => (val === "" ? null : Number(val)),
     z.nullable(z.number().positive("Price must be a positive number.")).optional()
   ),
+  quantity: z.preprocess( // Added quantity to schema
+    (val) => Number(val),
+    z.number().int().positive("Quantity must be a positive integer.")
+  ),
 });
 
 interface EditNeedsItemFormProps {
@@ -40,6 +44,7 @@ const EditNeedsItemForm: React.FC<EditNeedsItemFormProps> = ({ item, onSuccess }
     defaultValues: {
       description: item.description,
       price: item.price,
+      quantity: item.quantity, // Set default quantity from item
     },
   });
 
@@ -47,7 +52,7 @@ const EditNeedsItemForm: React.FC<EditNeedsItemFormProps> = ({ item, onSuccess }
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from('needs_items')
-        .update(values)
+        .update(values) // values now includes quantity
         .eq('id', item.id); // Update the specific item by ID
 
       if (error) {
@@ -82,6 +87,19 @@ const EditNeedsItemForm: React.FC<EditNeedsItemFormProps> = ({ item, onSuccess }
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Roof repair" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField // Added quantity field
+          control={form.control}
+          name="quantity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quantity</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="e.g., 1" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} value={field.value ?? ''} />
               </FormControl>
               <FormMessage />
             </FormItem>

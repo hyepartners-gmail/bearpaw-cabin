@@ -72,7 +72,7 @@ const Needs = () => {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Needs List</h1>{/* Updated title and added color */}
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Needs List</h1>
         <Skeleton className="w-full h-[300px] rounded-md" />
       </div>
     );
@@ -81,7 +81,7 @@ const Needs = () => {
   if (error) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Needs List</h1>{/* Updated title and added color */}
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Needs List</h1>
         <p className="text-red-500">Error loading needs: {error.message}</p>
       </div>
     );
@@ -90,10 +90,9 @@ const Needs = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Needs List</h1>{/* Updated title and added color */}
+        <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Needs List</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            {/* Ensure only the Button is inside DialogTrigger */}
             <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
@@ -122,6 +121,7 @@ const Needs = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Description</TableHead>
+              <TableHead>Quantity</TableHead> {/* Added Quantity column header */}
               <TableHead>Price</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -130,8 +130,8 @@ const Needs = () => {
             {needsItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
+                <TableCell>{item.quantity}</TableCell> {/* Display quantity */}
                 <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell>
-                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"
