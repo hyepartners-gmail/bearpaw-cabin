@@ -48,7 +48,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: "consumable", // Set a default value for type
+      type: "consumable",
       quantity: null,
       state: null,
       replacement_date: null,
@@ -59,7 +59,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
 
   const addItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      console.log("Attempting to insert item with values:", values); // Log values before insert
+      console.log("Attempting to insert item with values:", values);
       const { data, error } = await supabase
         .from('inventory_items')
         .insert([
@@ -73,27 +73,35 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
         ]);
 
       if (error) {
-        console.error("Supabase insert error:", error); // Log Supabase error
+        console.error("Supabase insert error:", error);
         throw error;
       }
-      console.log("Supabase insert successful:", data); // Log Supabase success
+      console.log("Supabase insert successful:", data);
       return data;
     },
     onSuccess: () => {
-      console.log("Mutation onSuccess triggered."); // Log mutation success
+      console.log("Mutation onSuccess triggered.");
       queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
       showSuccess("Inventory item added successfully!");
       onSuccess();
     },
     onError: (error) => {
-      console.error("Mutation onError triggered:", error); // Log mutation error
+      console.error("Mutation onError triggered:", error);
       showError(`Failed to add inventory item: ${error.message}`);
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form onSubmit triggered with values:", values); // Log form submit
-    addItemMutation.mutate(values);
+    console.log("Form onSubmit triggered.");
+    console.log("Form values:", values); // Log form values
+    console.log("Form errors:", form.formState.errors); // Log form errors
+
+    // Only mutate if the form is valid according to react-hook-form
+    if (form.formState.isValid) {
+      addItemMutation.mutate(values);
+    } else {
+      console.warn("Form is invalid, not submitting.");
+    }
   }
 
   return (
