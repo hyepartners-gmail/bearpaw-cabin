@@ -116,7 +116,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}> {/* Changed defaultValue to value */}
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select item type" />
@@ -193,7 +193,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                <Select onValueChange={field.onChange} value={field.value ?? ''}> {/* Changed defaultValue to value and handle null */}
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
