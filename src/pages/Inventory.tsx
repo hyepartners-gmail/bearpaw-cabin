@@ -72,7 +72,7 @@ const Inventory = () => {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Inventory</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Cabin Inventory</h1> {/* Updated title and added color */}
         <Skeleton className="w-full h-[300px] rounded-md" />
       </div>
     );
@@ -81,7 +81,7 @@ const Inventory = () => {
   if (error) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Inventory</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Cabin Inventory</h1> {/* Updated title and added color */}
         <p className="text-red-500">Error loading inventory: {error.message}</p>
       </div>
     );
@@ -93,10 +93,9 @@ const Inventory = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Cabin Inventory</h1>
+        <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Cabin Inventory</h1> {/* Updated title and added color */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            {/* Ensure only the Button is inside DialogTrigger */}
             <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
@@ -142,7 +141,6 @@ const Inventory = () => {
                     ? format(new Date(item.replacement_date), 'PPP')
                     : '-'}
                 </TableCell>
-                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"
@@ -184,7 +182,6 @@ const Inventory = () => {
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.state ?? '-'}</TableCell>
-                {/* Ensure no extra whitespace between TableCell tags */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"
