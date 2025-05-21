@@ -18,6 +18,7 @@ import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
 import { Trash2, Pencil } from "lucide-react"; // Import icons
 import BudgetChart from "@/components/BudgetChart"; // Import BudgetChart
+import { format, getQuarter, getYear } from "date-fns"; // Import date-fns functions
 
 const Budget = () => {
   const { data: budgetItems, isLoading, error, refetch } = useBudgetItems();
@@ -69,11 +70,58 @@ const Budget = () => {
     setIsEditDialogOpen(true);
   };
 
+  // Calculate summaries
+  const currentYear = getYear(new Date());
+  const yearlyTotal = budgetItems?.reduce((total, item) => {
+    if (item.type === 'monthly') {
+      // Add monthly cost for 12 months
+      return total + item.cost * 12;
+    } else if (item.type === 'one-time' && item.payment_date) {
+      // Add one-time cost if it falls within the current year
+      try {
+        const paymentYear = getYear(new Date(item.payment_date));
+        if (paymentYear === currentYear) {
+          return total + item.cost;
+        }
+      } catch (e) {
+        console.error("Invalid payment_date format for summary:", item.payment_date, e);
+      }
+    }
+    return total;
+  }, 0) || 0;
+
+  const quarterlyTotals: { [key: number]: number } = { 1: 0, 2: 0, 3: 0, 4: 0 };
+   if (budgetItems) {
+    budgetItems.forEach(item => {
+      if (item.type === 'monthly') {
+        // Add monthly cost to each quarter
+        quarterlyTotals[1] += item.cost * 3;
+        quarterlyTotals[2] += item.cost * 3;
+        quarterlyTotals[3] += item.cost * 3;
+        quarterlyTotals[4] += item.cost * 3;
+      } else if (item.type === 'one-time' && item.payment_date) {
+        // Add one-time cost to the specific quarter if it falls within the current year
+        try {
+          const paymentDate = new Date(item.payment_date);
+          const paymentYear = getYear(paymentDate);
+          const paymentQuarter = getQuarter(paymentDate);
+          if (paymentYear === currentYear && quarterlyTotals.hasOwnProperty(paymentQuarter)) {
+             quarterlyTotals[paymentQuarter] += item.cost;
+          }
+        } catch (e) {
+          console.error("Invalid payment_date format for quarterly summary:", item.payment_date, e);
+        }
+      }
+    });
+  }
+
+
   if (isLoading) {
     return (
       <div>
         <h1 className="text-2xl font-bold mb-4">Cabin Budget Tracker</h1>
-        <Skeleton className="w-full h-[300px] rounded-md" />
+        <Skeleton className="w-full h-[100px] rounded-md mb-4" /> {/* Skeleton for summaries */}
+        <Skeleton className="w-full h-[400px] rounded-md" /> {/* Skeleton for chart */}
       </div>
     );
   }
@@ -103,6 +151,31 @@ const Budget = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Budget Summaries */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="bg-gray-100 p-4 rounded-md shadow">
+          <h3 className="text-lg font-semibold">Yearly Total ({currentYear})</h3>
+          <p className="text-2xl font-bold text-blue-600">${yearlyTotal.toFixed(2)}</p>
+        </div>
+        <div className="bg-gray-100 p-4 rounded-md shadow">
+          <h3 className="text-lg font-semibold">Q1 Total</h3>
+          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[1].toFixed(2)}</p>
+        </div>
+        <div className="bg-gray-100 p-4 rounded-md shadow">
+          <h3 className="text-lg font-semibold">Q2 Total</h3>
+          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[2].toFixed(2)}</p>
+        </div>
+        <div className="bg-gray-100 p-4 rounded-md shadow">
+          <h3 className="text-lg font-semibold">Q3 Total</h3>
+          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[3].toFixed(2)}</p>
+        </div>
+        <div className="bg-gray-100 p-4 rounded-md shadow">
+          <h3 className="text-lg font-semibold">Q4 Total</h3>
+          <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[4].toFixed(2)}</p>
+        </div>
+      </div>
+
 
       {/* Edit Dialog */}
       {selectedItem && (
