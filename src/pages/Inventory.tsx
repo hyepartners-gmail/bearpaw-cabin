@@ -12,11 +12,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AddInventoryItemForm from "@/components/AddInventoryItemForm";
-import EditInventoryItemForm from "@/components/EditInventoryItemForm"; // Import the new edit form
+import EditInventoryItemForm from "@/components/EditInventoryItemForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { showSuccess, showError } from "@/utils/toast";
-import { Trash2, Pencil } from "lucide-react"; // Import Pencil icon
+import { Trash2, Pencil } from "lucide-react";
+import { format } from "date-fns"; // Import format
 
 const Inventory = () => {
   const { data: inventoryItems, isLoading, error, refetch } = useInventoryItems();
@@ -124,6 +125,7 @@ const Inventory = () => {
               <TableHead>Type</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>State</TableHead>
+              <TableHead>Replacement Date</TableHead>{/* Added Replacement Date column */}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -134,9 +136,14 @@ const Inventory = () => {
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{item.quantity ?? '-'}</TableCell>
                 <TableCell>{item.state ?? '-'}</TableCell>
-                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                <TableCell>
+                  {item.replacement_date
+                    ? format(new Date(item.replacement_date), 'PPP') // Format the date for display
+                    : '-'}
+                </TableCell>{/* Display Replacement Date */}
+                <TableCell className="text-right flex justify-end space-x-2">
                   <Button
-                    variant="outline" // Use outline variant for edit
+                    variant="outline"
                     size="icon"
                     onClick={() => handleEdit(item)}
                   >

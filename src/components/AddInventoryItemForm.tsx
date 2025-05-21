@@ -4,8 +4,12 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { showSuccess, showError } from "@/utils/toast";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -15,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
@@ -29,6 +34,7 @@ const formSchema = z.object({
     z.nullable(z.number().int().positive("Quantity must be a positive integer.")).optional()
   ),
   state: z.string().nullable().optional(),
+  replacement_date: z.date().nullable().optional(), // Added replacement_date field
 });
 
 interface AddInventoryItemFormProps {
@@ -45,10 +51,11 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
       type: undefined, // Use undefined for initial state of select
       quantity: null,
       state: null,
+      replacement_date: null, // Default to null
     },
   });
 
-  const { type } = form.watch(); // Watch the type field to conditionally render quantity/state
+  const { type } = form.watch(); // Watch the type field to conditionally render quantity/state/date
 
   const addItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -58,8 +65,9 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
           {
             name: values.name,
             type: values.type,
-            quantity: values.type === 'consumable' ? values.quantity : null, // Only insert quantity for consumable
-            state: values.type === 'non-consumable' ? values.state : null, // Only insert state for non-consumable
+            quantity: values.type === 'consumable' ? values.quantity : null,
+            state: values.type === 'non-consumable' ? values.state : null,
+            replacement_date: values.type === 'consumable' && values.replacement_date ? format(values.replacement_date, 'yyyy-MM-dd') : null, // Format date for Supabase
           },
         ]);
 
@@ -122,19 +130,59 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
           )}
         />
         {type === 'consumable' && (
-          <FormField
-            control={form.control}
-            name="quantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantity</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="e.g., 5" {...field} value={field.value ?? ''} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <>
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="e.g., 5" {...field} value={field.value ?? ''} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="replacement_date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Replacement Date (Optional)</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ?? undefined}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
         )}
         {type === 'non-consumable' && (
           <FormField

@@ -7,6 +7,7 @@ export interface InventoryItem {
   type: 'consumable' | 'non-consumable';
   quantity: number | null;
   state: string | null;
+  replacement_date: string | null; // Added replacement_date field
   created_at: string;
 }
 
