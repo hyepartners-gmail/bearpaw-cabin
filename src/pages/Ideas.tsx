@@ -92,7 +92,7 @@ const Ideas = () => {
         <h1 className="text-2xl font-bold">Cabin Ideas List</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button>Add Idea</Button>
+            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Idea</Button> {/* Added brown color classes */}
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
