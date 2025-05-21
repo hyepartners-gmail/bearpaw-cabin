@@ -1,5 +1,5 @@
 import { useBudgetItems } from "@/hooks/use-budget-items";
-import { format, subMonths, getMonth, getYear } from "date-fns";
+import { format, subMonths, getMonth, getYear, isWithinInterval, startOfMonth, endOfMonth } from "date-fns"; // Import necessary date-fns functions
 import {
   BarChart,
   Bar,
@@ -16,7 +16,7 @@ const BudgetBarChart = () => {
   const { data: budgetItems, isLoading, error } = useBudgetItems();
 
   if (isLoading) {
-    return <Skeleton className="w-full h-[300px] rounded-md mt-8" />; {/* Reduced height */}
+    return <Skeleton className="w-full h-[300px] rounded-md mt-8" />;
   }
 
   if (error) {
@@ -26,6 +26,9 @@ const BudgetBarChart = () => {
   // Calculate data for the last 12 months
   const monthlyData: { [key: string]: number } = {};
   const today = new Date();
+  const endDate = endOfMonth(today); // End of the current month
+  const startDate = startOfMonth(subMonths(today, 11)); // Start of the month 11 months ago
+
   const monthNames = Array.from({ length: 12 }).map((_, i) => {
     const date = subMonths(today, 11 - i);
     const monthYear = format(date, 'MMM yy');
@@ -41,12 +44,19 @@ const BudgetBarChart = () => {
           monthlyData[monthYear] += item.cost;
         });
       } else if (item.type === 'one-time' && item.payment_date) {
-        // Add one-time cost to the specific payment month
+        // Add one-time cost to the specific payment month if it's within the last 12 months
         try {
           const paymentDate = new Date(item.payment_date);
-          const paymentMonthYear = format(paymentDate, 'MMM yy');
-          if (monthlyData.hasOwnProperty(paymentMonthYear)) {
-            monthlyData[paymentMonthYear] += item.cost;
+          // Check if the payment date is within the last 12 months (inclusive of the start and end month)
+          if (isWithinInterval(paymentDate, { start: startDate, end: endDate })) {
+             const paymentMonthYear = format(paymentDate, 'MMM yy');
+             if (monthlyData.hasOwnProperty(paymentMonthYear)) {
+               monthlyData[paymentMonthYear] += item.cost;
+             } else {
+               // This case should ideally not happen if monthNames covers the range,
+               // but adding a log for debugging if needed.
+               console.warn(`Payment date ${paymentMonthYear} is within interval but not in monthNames keys.`);
+             }
           }
         } catch (e) {
           console.error("Invalid payment_date format:", item.payment_date, e);
@@ -65,7 +75,7 @@ const BudgetBarChart = () => {
   return (
     <div className="mt-8">
       <h2 className="text-xl font-semibold mb-4">Monthly Spending Overview (Last 12 Months)</h2>
-      <ResponsiveContainer width="100%" height={300}> {/* Reduced height */}
+      <ResponsiveContainer width="100%" height={300}>
         <BarChart
           data={chartData}
           margin={{
@@ -80,7 +90,7 @@ const BudgetBarChart = () => {
           <YAxis />
           <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
           <Legend />
-          <Bar dataKey="total" fill="#047857" name="Total Spending" /> {/* Changed fill color to emerald-600 hex */}
+          <Bar dataKey="total" fill="#047857" name="Total Spending" />
         </BarChart>
       </ResponsiveContainer>
     </div>
