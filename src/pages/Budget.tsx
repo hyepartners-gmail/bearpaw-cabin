@@ -157,26 +157,26 @@ const Budget = () => {
         {/* Yearly Total */}
         <div className="bg-gray-100 p-4 rounded-md shadow w-full mb-4"> {/* Full width and margin bottom */}
           <h3 className="text-lg font-semibold">Yearly Total ({currentYear})</h3>
-          <p className="text-2xl font-bold text-blue-600">${yearlyTotal.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-emerald-600">${yearlyTotal.toFixed(2)}</p> {/* Changed text color */}
         </div>
 
         {/* Quarterly Totals - 4 in a row on larger screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> {/* Grid with 1 column on small, 2 on medium, 4 on large */}
           <div className="bg-gray-100 p-4 rounded-md shadow">
             <h3 className="text-lg font-semibold">Q1 Total</h3>
-            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[1].toFixed(2)}</p>
+            <p className="text-2xl font-bold text-emerald-600">${quarterlyTotals[1].toFixed(2)}</p> {/* Changed text color */}
           </div>
           <div className="bg-gray-100 p-4 rounded-md shadow">
             <h3 className="text-lg font-semibold">Q2 Total</h3>
-            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[2].toFixed(2)}</p>
+            <p className="text-2xl font-bold text-emerald-600">${quarterlyTotals[2].toFixed(2)}</p> {/* Changed text color */}
           </div>
           <div className="bg-gray-100 p-4 rounded-md shadow">
             <h3 className="text-lg font-semibold">Q3 Total</h3>
-            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[3].toFixed(2)}</p>
+            <p className="text-2xl font-bold text-emerald-600">${quarterlyTotals[3].toFixed(2)}</p> {/* Changed text color */}
           </div>
           <div className="bg-gray-100 p-4 rounded-md shadow">
             <h3 className="text-lg font-semibold">Q4 Total</h3>
-            <p className="text-2xl font-bold text-blue-600">${quarterlyTotals[4].toFixed(2)}</p>
+            <p className="text-2xl font-bold text-emerald-600">${quarterlyTotals[4].toFixed(2)}</p> {/* Changed text color */}
           </div>
         </div>
       </div>

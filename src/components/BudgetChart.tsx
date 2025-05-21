@@ -80,7 +80,7 @@ const BudgetChart = () => {
           <YAxis />
           <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
           <Legend />
-          <Bar dataKey="total" fill="#8884d8" name="Total Spending" />
+          <Bar dataKey="total" fill="#047857" name="Total Spending" /> {/* Changed fill color to emerald-600 hex */}
         </BarChart>
       </ResponsiveContainer>
     </div>
