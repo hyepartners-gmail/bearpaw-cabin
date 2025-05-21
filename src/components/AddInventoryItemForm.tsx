@@ -33,7 +33,6 @@ const formSchema = z.object({
     (val) => (val === "" ? null : Number(val)),
     z.nullable(z.number().int().positive("Quantity must be a positive integer.")).optional()
   ),
-  // Updated state validation to be an enum or null
   state: z.enum(["Clean", "Dirty", "Good", "Broken"]).nullable().optional(),
   replacement_date: z.date().nullable().optional(),
 });
@@ -51,15 +50,16 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
       name: "",
       type: undefined,
       quantity: null,
-      state: null, // Default state to null
+      state: null,
       replacement_date: null,
     },
   });
 
-  const { type } = form.watch(); // Watch the type field
+  const { type } = form.watch();
 
   const addItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+      console.log("Attempting to insert item with values:", values); // Log values before insert
       const { data, error } = await supabase
         .from('inventory_items')
         .insert([
@@ -67,29 +67,32 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
             name: values.name,
             type: values.type,
             quantity: values.type === 'consumable' ? values.quantity : null,
-            state: values.type === 'non-consumable' ? values.state : null, // Only save state for non-consumable
+            state: values.type === 'non-consumable' ? values.state : null,
             replacement_date: values.type === 'consumable' && values.replacement_date ? format(values.replacement_date, 'yyyy-MM-dd') : null,
           },
         ]);
 
       if (error) {
-        console.error("Error inserting inventory item:", error);
+        console.error("Supabase insert error:", error); // Log Supabase error
         throw error;
       }
+      console.log("Supabase insert successful:", data); // Log Supabase success
       return data;
     },
     onSuccess: () => {
+      console.log("Mutation onSuccess triggered."); // Log mutation success
       queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
       showSuccess("Inventory item added successfully!");
       onSuccess();
     },
     onError: (error) => {
+      console.error("Mutation onError triggered:", error); // Log mutation error
       showError(`Failed to add inventory item: ${error.message}`);
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with values:", values);
+    console.log("Form onSubmit triggered with values:", values); // Log form submit
     addItemMutation.mutate(values);
   }
 
