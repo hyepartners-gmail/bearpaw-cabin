@@ -50,7 +50,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
       name: "",
       type: "consumable",
       quantity: null,
-      state: null,
+      state: null, // Default state is null
       replacement_date: null,
     },
   });
@@ -93,10 +93,9 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Form onSubmit triggered.");
-    console.log("Form values:", values); // Log form values
-    console.log("Form errors:", form.formState.errors); // Log form errors
+    console.log("Form values:", values);
+    console.log("Form errors:", form.formState.errors);
 
-    // Only mutate if the form is valid according to react-hook-form
     if (form.formState.isValid) {
       addItemMutation.mutate(values);
     } else {
@@ -203,7 +202,7 @@ const AddInventoryItemForm: React.FC<AddInventoryItemFormProps> = ({ onSuccess }
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                <Select onValueChange={field.onChange} value={field.value}> {/* Removed ?? '' */}
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />

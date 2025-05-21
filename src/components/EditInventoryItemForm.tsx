@@ -50,7 +50,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: item.name,
-      type: item.type, // Use the item's existing type
+      type: item.type,
       quantity: item.quantity,
       state: item.state,
       replacement_date: item.replacement_date ? new Date(item.replacement_date) : null,
@@ -192,7 +192,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                <Select onValueChange={field.onChange} value={field.value}> {/* Removed ?? '' */}
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
