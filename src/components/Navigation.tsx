@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 const Navigation = () => {
   return (
     <nav className="w-full bg-gray-100 p-4 shadow-md">
-      <ul className="flex flex-wrap justify-center gap-2 md:gap-4"> {/* Added flex-wrap and gap for better spacing */}
+      <ul className="flex flex-wrap justify-center gap-2 md:gap-4">
         <li>
           <Button variant="ghost" asChild className="lg:text-lg">
             <Link to="/inventory">Inventory</Link>
@@ -37,7 +37,7 @@ const Navigation = () => {
         </li>
          <li>
           <Button variant="ghost" asChild className="lg:text-lg">
-            <Link to="/projections">Projections</Link> {/* Added Projections link */}
+            <Link to="/projections">Projections</Link>
           </Button>
         </li>
       </ul>

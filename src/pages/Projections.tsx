@@ -8,8 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import ProjectedCostByCategoryChart from "@/components/ProjectedCostByCategoryChart"; // Import the chart component
-import { format, parseISO } from "date-fns"; // Import date functions
+import ProjectedCostByCategoryChart from "@/components/ProjectedCostByCategoryChart";
+import { format, parseISO } from "date-fns";
 
 const Projections = () => {
   const { data: projectedItems, isLoading, error } = useProjectedItems();
@@ -18,8 +18,8 @@ const Projections = () => {
     return (
       <div>
         <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Projections</h1>
-        <Skeleton className="w-full h-[300px] rounded-md mb-8" /> {/* Skeleton for chart */}
-        <Skeleton className="w-full h-[300px] rounded-md" /> {/* Skeleton for table */}
+        <Skeleton className="w-full h-[300px] rounded-md mb-8" />
+        <Skeleton className="w-full h-[300px] rounded-md" />
       </div>
     );
   }
@@ -50,19 +50,15 @@ const Projections = () => {
               <TableHead>Description</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>Cost/Price</TableHead>
-              <TableHead>Relevant Date</TableHead> {/* Added Relevant Date column */}
+              <TableHead>Relevant Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {projectedItems.map((item) => (
-              <TableRow key={`${item.source}-${item.id}`}> {/* Use a composite key */}
-                <TableCell className="font-medium">{item.source}</TableCell>
-                <TableCell>{item.description}</TableCell>
-                <TableCell>{item.quantity ?? '-'}</TableCell>
-                <TableCell>{item.cost !== null ? `$${item.cost.toFixed(2)}` : '-'}</TableCell>
-                 <TableCell>
+              <TableRow key={`${item.source}-${item.id}`}>
+                <TableCell className="font-medium">{item.source}</TableCell><TableCell>{item.description}</TableCell><TableCell>{item.quantity ?? '-'}</TableCell><TableCell>{item.cost !== null ? `$${item.cost.toFixed(2)}` : '-'}</TableCell><TableCell>
                   {item.date
-                    ? format(parseISO(item.date), 'PPP') // Format the date
+                    ? format(parseISO(item.date), 'PPP')
                     : '-'}
                 </TableCell>
               </TableRow>
