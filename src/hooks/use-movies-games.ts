@@ -5,8 +5,8 @@ import { showSuccess, showError } from '@/utils/toast';
 export interface MovieGameItem {
   id: string;
   name: string;
-  type: 'VHS' | 'DVD';
-  players: string | null;
+  type: 'VHS' | 'DVD' | 'Game'; // Added 'Game' to the type enum
+  players: string | null; // Players is relevant for 'Game' type
   created_at: string;
 }
 
@@ -24,9 +24,17 @@ const fetchMovieGameItems = async (): Promise<MovieGameItem[]> => {
 };
 
 const addMovieGameItem = async (item: Omit<MovieGameItem, 'id' | 'created_at'>): Promise<MovieGameItem> => {
+  // Ensure players is null if type is not 'Game'
+  const itemToInsert = {
+    ...item,
+    players: item.type === 'Game' ? item.players : null,
+    // Ensure type is null if type is 'Game' (Supabase schema might need adjustment if type is strictly VHS/DVD)
+    // Assuming 'type' column can store 'Game' string based on the interface update
+  };
+
   const { data, error } = await supabase
     .from('movies_games')
-    .insert([item])
+    .insert([itemToInsert])
     .select()
     .single();
 
@@ -38,9 +46,15 @@ const addMovieGameItem = async (item: Omit<MovieGameItem, 'id' | 'created_at'>):
 };
 
 const updateMovieGameItem = async (item: Omit<MovieGameItem, 'created_at'>): Promise<MovieGameItem> => {
+   // Ensure players is null if type is not 'Game' before updating
+   const itemToUpdate = {
+    ...item,
+    players: item.type === 'Game' ? item.players : null,
+   };
+
   const { data, error } = await supabase
     .from('movies_games')
-    .update(item)
+    .update(itemToUpdate)
     .eq('id', item.id)
     .select()
     .single();
@@ -77,7 +91,7 @@ export const useAddMovieGameItem = () => {
     mutationFn: addMovieGameItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movieGameItems'] });
-      showSuccess("Movie/Game item added successfully!");
+      showSuccess("Item added successfully!"); // Generic success message
     },
     onError: (error) => {
       showError(`Failed to add item: ${error.message}`);
@@ -91,7 +105,7 @@ export const useUpdateMovieGameItem = () => {
     mutationFn: updateMovieGameItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movieGameItems'] });
-      showSuccess("Movie/Game item updated successfully!");
+      showSuccess("Item updated successfully!"); // Generic success message
     },
     onError: (error) => {
       showError(`Failed to update item: ${error.message}`);
@@ -105,7 +119,7 @@ export const useDeleteMovieGameItem = () => {
     mutationFn: deleteMovieGameItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movieGameItems'] });
-      showSuccess("Movie/Game item deleted successfully!");
+      showSuccess("Item deleted successfully!"); // Generic success message
     },
     onError: (error) => {
       showError(`Failed to delete item: ${error.message}`);

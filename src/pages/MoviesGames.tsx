@@ -63,6 +63,10 @@ const MoviesGames = () => {
     );
   }
 
+  // Filter items into Games and Movies
+  const gameItems = movieGameItems?.filter(item => item.type === 'Game') || [];
+  const movieItems = movieGameItems?.filter(item => item.type === 'VHS' || item.type === 'DVD') || [];
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -73,7 +77,7 @@ const MoviesGames = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Add New Movie/Game Item</DialogTitle>
+              <DialogTitle>Add New Movie or Game</DialogTitle>
             </DialogHeader>
             <AddMovieGameItemForm onSuccess={handleItemAdded} />
           </DialogContent>
@@ -85,28 +89,28 @@ const MoviesGames = () => {
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Edit Movie/Game Item</DialogTitle>
+              <DialogTitle>Edit Movie or Game</DialogTitle>
             </DialogHeader>
             <EditMovieGameItemForm item={selectedItem} onSuccess={handleItemEdited} />
           </DialogContent>
         </Dialog>
       )}
 
-      {movieGameItems && movieGameItems.length > 0 ? (
+      {/* Games Table */}
+      <h2 className="text-xl font-semibold mt-8 mb-2">Games</h2>
+      {gameItems.length > 0 ? (
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
               <TableHead># of Players</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {movieGameItems.map((item) => (
+            {gameItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell>{item.type}</TableCell>
                 <TableCell>{item.players ?? '-'}</TableCell>
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
@@ -130,7 +134,48 @@ const MoviesGames = () => {
           </TableBody>
         </Table>
       ) : (
-        <p>No movies or games found. Add some!</p>
+        <p>No games found. Add some!</p>
+      )}
+
+      {/* Movies Table */}
+      <h2 className="text-xl font-semibold mt-8 mb-2">Movies</h2>
+      {movieItems.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Format</TableHead> {/* Changed header */}
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {movieItems.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell>{item.type}</TableCell> {/* Display VHS/DVD */}
+                <TableCell className="text-right flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => handleDelete(item)}
+                    disabled={deleteItemMutation.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <p>No movies found. Add some!</p>
       )}
     </div>
   );
