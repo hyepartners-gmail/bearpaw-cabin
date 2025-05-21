@@ -71,7 +71,7 @@ const Ideas = () => {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Ideas List</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Ideas List</h1>{/* Updated title and added color */}
         <Skeleton className="w-full h-[300px] rounded-md" />
       </div>
     );
@@ -80,7 +80,7 @@ const Ideas = () => {
   if (error) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Ideas List</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Ideas List</h1>{/* Updated title and added color */}
         <p className="text-red-500">Error loading ideas: {error.message}</p>
       </div>
     );
@@ -89,10 +89,9 @@ const Ideas = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Cabin Ideas List</h1>
+        <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Ideas List</h1>{/* Updated title and added color */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            {/* Ensure only the Button is inside DialogTrigger */}
             <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Idea</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">

@@ -119,7 +119,7 @@ const Budget = () => {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Budget Tracker</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Budget Tracker</h1>{/* Updated title and added color */}
         <Skeleton className="w-full h-[100px] rounded-md mb-4" /> {/* Skeleton for summaries */}
         <Skeleton className="w-full h-[400px] rounded-md" /> {/* Skeleton for chart */}
       </div>
@@ -129,7 +129,7 @@ const Budget = () => {
   if (error) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Budget Tracker</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Budget Tracker</h1>{/* Updated title and added color */}
         <p className="text-red-500">Error loading budget: {error.message}</p>
       </div>
     );
@@ -138,10 +138,9 @@ const Budget = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Cabin Budget Tracker</h1>
+        <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Budget Tracker</h1>{/* Updated title and added color */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            {/* Ensure only the Button is inside DialogTrigger */}
             <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">

@@ -72,7 +72,7 @@ const Needs = () => {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Needs List</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Needs List</h1>{/* Updated title and added color */}
         <Skeleton className="w-full h-[300px] rounded-md" />
       </div>
     );
@@ -81,7 +81,7 @@ const Needs = () => {
   if (error) {
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">Cabin Needs List</h1>
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Needs List</h1>{/* Updated title and added color */}
         <p className="text-red-500">Error loading needs: {error.message}</p>
       </div>
     );
@@ -90,7 +90,7 @@ const Needs = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Cabin Needs List</h1>
+        <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Needs List</h1>{/* Updated title and added color */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             {/* Ensure only the Button is inside DialogTrigger */}
