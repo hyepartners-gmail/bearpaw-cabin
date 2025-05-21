@@ -122,7 +122,7 @@ const Budget = () => {
       <div>
         <h1 className="text-2xl font-bold mb-4 text-emerald-600">Bear Paw Budget Tracker</h1>{/* Updated title and added color */}
         <Skeleton className="w-full h-[100px] rounded-md mb-4" /> {/* Skeleton for summaries */}
-        <Skeleton className="w-full h-[400px] rounded-md" /> {/* Skeleton for chart */}
+        <Skeleton className="w-full h-[300px] rounded-md" /> {/* Skeleton for chart */}
       </div>
     );
   }
@@ -140,6 +140,7 @@ const Budget = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-emerald-600">Bear Paw Budget Tracker</h1>{/* Updated title and added color */}
+        {/* First Add Item Button */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
@@ -198,6 +199,21 @@ const Budget = () => {
       {/* Budget Charts */}
       <BudgetPieChart /> {/* Added the new pie chart */}
       <BudgetBarChart /> {/* Kept the existing bar chart */}
+
+      {/* Second Add Item Button */}
+      <div className="flex justify-center mt-8"> {/* Centered container with margin top */}
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-amber-800 hover:bg-amber-900 text-primary-foreground">Add Item</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Budget Item</DialogTitle>
+            </DialogHeader>
+            <AddBudgetItemForm onSuccess={handleItemAdded} />
+          </DialogContent>
+        </Dialog>
+      </div>
 
 
       {/* Budget Items Table */}

@@ -12,11 +12,11 @@ import {
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const BudgetChart = () => {
+const BudgetBarChart = () => {
   const { data: budgetItems, isLoading, error } = useBudgetItems();
 
   if (isLoading) {
-    return <Skeleton className="w-full h-[400px] rounded-md mt-8" />;
+    return <Skeleton className="w-full h-[300px] rounded-md mt-8" />; {/* Reduced height */}
   }
 
   if (error) {
@@ -65,7 +65,7 @@ const BudgetChart = () => {
   return (
     <div className="mt-8">
       <h2 className="text-xl font-semibold mb-4">Monthly Spending Overview (Last 12 Months)</h2>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={300}> {/* Reduced height */}
         <BarChart
           data={chartData}
           margin={{
@@ -87,4 +87,4 @@ const BudgetChart = () => {
   );
 };
 
-export default BudgetChart;
+export default BudgetBarChart;
