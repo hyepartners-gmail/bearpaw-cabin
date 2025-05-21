@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import m
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
 import { Trash2, Pencil } from "lucide-react"; // Import icons
+import BudgetChart from "@/components/BudgetChart"; // Import BudgetChart
 
 const Budget = () => {
   const { data: budgetItems, isLoading, error, refetch } = useBudgetItems();
@@ -115,6 +116,11 @@ const Budget = () => {
         </Dialog>
       )}
 
+      {/* Budget Chart */}
+      <BudgetChart />
+
+      {/* Budget Items Table */}
+      <h2 className="text-xl font-semibold mt-8 mb-2">Budget Items List</h2>
       {budgetItems && budgetItems.length > 0 ? (
         <Table>
           <TableHeader>
@@ -122,7 +128,8 @@ const Budget = () => {
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Cost</TableHead>
-              <TableHead className="text-right">Actions</TableHead> {/* Added Actions column */}
+              <TableHead>Payment Date</TableHead> {/* Added Payment Date column */}
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -131,9 +138,10 @@ const Budget = () => {
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>${item.cost.toFixed(2)}</TableCell>
-                <TableCell className="text-right flex justify-end space-x-2"> {/* Use flex and space-x for buttons */}
+                <TableCell>{item.payment_date ? format(new Date(item.payment_date), 'PPP') : '-'}</TableCell> {/* Display payment date */}
+                <TableCell className="text-right flex justify-end space-x-2">
                   <Button
-                    variant="outline" // Use outline variant for edit
+                    variant="outline"
                     size="icon"
                     onClick={() => handleEdit(item)}
                   >

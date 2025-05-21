@@ -6,13 +6,14 @@ export interface BudgetItem {
   name: string;
   type: 'monthly' | 'one-time';
   cost: number;
+  payment_date: string | null; // Added optional payment_date field
   created_at: string;
 }
 
 const fetchBudgetItems = async (): Promise<BudgetItem[]> => {
   const { data, error } = await supabase
     .from('budget_items')
-    .select('*')
+    .select('id, name, type, cost, payment_date, created_at') // Select the new payment_date column
     .order('created_at', { ascending: false });
 
   if (error) {

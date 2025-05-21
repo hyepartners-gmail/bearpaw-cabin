@@ -4,8 +4,12 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { showSuccess, showError } from "@/utils/toast";
+import { format } from "date-fns"; // Import format
+import { CalendarIcon } from "lucide-react"; // Import CalendarIcon
 
+import { cn } from "@/lib/utils"; // Import cn
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar"; // Import Calendar
 import {
   Form,
   FormControl,
@@ -15,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // Import Popover components
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
@@ -28,6 +33,7 @@ const formSchema = z.object({
     (val) => Number(val),
     z.number().positive("Cost must be a positive number.")
   ),
+  payment_date: z.date().nullable().optional(), // Added optional payment_date field
 });
 
 interface AddBudgetItemFormProps {
@@ -41,16 +47,27 @@ const AddBudgetItemForm: React.FC<AddBudgetItemFormProps> = ({ onSuccess }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: undefined, // Use undefined for initial state of select
-      cost: undefined, // Use undefined for initial state of number input
+      type: undefined,
+      cost: undefined,
+      payment_date: null, // Default payment_date to null
     },
   });
+
+  const { type } = form.watch(); // Watch the type field
 
   const addItemMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from('budget_items')
-        .insert([values]);
+        .insert([
+          {
+            name: values.name,
+            type: values.type,
+            cost: values.cost,
+            // Only include payment_date if type is 'one-time' and date is selected
+            payment_date: values.type === 'one-time' && values.payment_date ? format(values.payment_date, 'yyyy-MM-dd') : null,
+          },
+        ]);
 
       if (error) {
         console.error("Error inserting budget item:", error);
@@ -123,6 +140,46 @@ const AddBudgetItemForm: React.FC<AddBudgetItemFormProps> = ({ onSuccess }) => {
             </FormItem>
           )}
         />
+        {type === 'one-time' && ( // Conditionally render date picker for one-time items
+          <FormField
+            control={form.control}
+            name="payment_date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Payment Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value ?? undefined}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button type="submit" disabled={addItemMutation.isPending}>
           {addItemMutation.isPending ? "Adding..." : "Add Item"}
         </Button>
