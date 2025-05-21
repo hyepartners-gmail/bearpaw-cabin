@@ -120,7 +120,8 @@ const Ideas = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Description</TableHead>
-              <TableHead>Price</TableHead> {/* Added Price column header */}
+              <TableHead>Price</TableHead>
+              <TableHead>Notes</TableHead> {/* Added Notes column header */}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -128,7 +129,8 @@ const Ideas = () => {
             {ideasItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.description}</TableCell>
-                <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell> {/* Display price */}
+                <TableCell>{item.price !== null ? `$${item.price.toFixed(2)}` : '-'}</TableCell>
+                <TableCell>{item.notes ?? '-'}</TableCell> {/* Display notes */}
                 <TableCell className="text-right flex justify-end space-x-2">
                   <Button
                     variant="outline"

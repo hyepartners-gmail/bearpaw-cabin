@@ -15,15 +15,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea"; // Import Textarea
 
 const formSchema = z.object({
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
-  price: z.preprocess( // Added price to schema
+  price: z.preprocess(
     (val) => (val === "" ? null : Number(val)),
     z.nullable(z.number().positive("Price must be a positive number.")).optional()
   ),
+  notes: z.string().nullable().optional(), // Added optional notes field to schema
 });
 
 interface AddIdeasItemFormProps {
@@ -37,7 +39,8 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: "",
-      price: null, // Default price to null
+      price: null,
+      notes: null, // Default notes to null
     },
   });
 
@@ -45,7 +48,7 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from('ideas_items')
-        .insert([values]); // values now includes price
+        .insert([values]); // values now includes price and notes
 
       if (error) {
         console.error("Error inserting ideas item:", error);
@@ -84,7 +87,7 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
             </FormItem>
           )}
         />
-        <FormField // Added price input field
+        <FormField
           control={form.control}
           name="price"
           render={({ field }) => (
@@ -92,6 +95,19 @@ const AddIdeasItemForm: React.FC<AddIdeasItemFormProps> = ({ onSuccess }) => {
               <FormLabel>Price (Optional)</FormLabel>
               <FormControl>
                 <Input type="number" step="0.01" placeholder="e.g., 500.00" {...field} value={field.value ?? ''} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField // Added notes textarea field
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes (Optional)</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Add any relevant notes here..." {...field} value={field.value ?? ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
