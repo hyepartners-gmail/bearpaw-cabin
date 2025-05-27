@@ -14,7 +14,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import AddBudgetItemForm from "@/components/AddBudgetItemForm";
 import EditBudgetItemForm from "@/components/EditBudgetItemForm"; // Import the new edit form
 import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import mutation hooks
-import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
 import { Trash2, Pencil } from "lucide-react"; // Import icons
 import BudgetBarChart from "@/components/BudgetBarChart"; // Import BudgetBarChart (renamed)

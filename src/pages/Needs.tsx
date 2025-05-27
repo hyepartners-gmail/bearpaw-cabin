@@ -15,7 +15,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import AddNeedsItemForm from "@/components/AddNeedsItemForm";
 import EditNeedsItemForm from "@/components/EditNeedsItemForm"; // Import the new edit form
 import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import mutation hooks
-import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
 import { Trash2, Pencil } from "lucide-react"; // Import icons
 

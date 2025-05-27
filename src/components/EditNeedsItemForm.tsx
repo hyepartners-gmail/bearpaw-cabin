@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 import { showSuccess, showError } from "@/utils/toast";
 import { NeedsItem } from "@/hooks/use-needs-items"; // Import the type
 

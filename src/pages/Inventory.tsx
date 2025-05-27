@@ -14,7 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import AddInventoryItemForm from "@/components/AddInventoryItemForm";
 import EditInventoryItemForm from "@/components/EditInventoryItemForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+
+import { useApi } from '@/hooks/useApi'
 import { showSuccess, showError } from "@/utils/toast";
 import { Trash2, Pencil } from "lucide-react";
 import { format } from "date-fns";
@@ -37,26 +38,23 @@ const Inventory = () => {
     setSelectedItem(null); // Clear selected item
   };
 
-  const deleteItemMutation = useMutation({
-    mutationFn: async (itemId: string) => {
-      const { error } = await supabase
-        .from('inventory_items')
-        .delete()
-        .eq('id', itemId);
 
-      if (error) {
-        console.error("Error deleting inventory item:", error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['inventoryItems'] });
-      showSuccess("Inventory item deleted successfully!");
-    },
-    onError: (error) => {
-      showError(`Failed to delete inventory item: ${error.message}`);
-    },
-  });
+  const { deleteInventoryItem } = useApi()
+
+const deleteItemMutation = useMutation<
+  void,         // TData
+  Error,        // TError
+  string        // TVariables
+>({
+  mutationFn: (id) => deleteInventoryItem(id),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['inventoryItems'] })
+    showSuccess('Inventory item deleted successfully!')
+  },
+  onError: (err) => {
+    showError(`Failed to delete inventory item: ${err.message}`)
+  },
+})
 
   const handleDelete = (item: InventoryItem) => {
     if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {

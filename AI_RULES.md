@@ -1,6 +1,7 @@
 # Tech Stack
 
-- You are building a React application.
+- You are building a React application that is deployed on Google Cloud Run.
+- Use Google Datastore for the database, do not use Supabase.
 - Use TypeScript.
 - Use React Router. KEEP the routes in src/App.tsx
 - Always put source code in the src folder.
