@@ -17,7 +17,8 @@ RUN npm ci --production
 
 # Copy your API server + static build
 COPY server.js ./
-COPY dist ./dist
+# COPY dist ./dist
+COPY --from=builder /app/dist ./dist
 
 ENV NODE_ENV=production
 EXPOSE 8080

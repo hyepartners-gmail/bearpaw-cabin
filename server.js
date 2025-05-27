@@ -95,7 +95,8 @@ app.use(express.static(buildDir))
 app.get('*', (req, res) => res.sendFile(path.join(buildDir, 'index.html')))
 
 // ── START SERVER ─────────────────────────────────────────────────────────────
-const port = process.env.PORT || 8080
+// const port = process.env.PORT || 8080
+const port = parseInt(process.env.PORT ?? '8080', 10)
 app.listen(port, () => console.log(`🚀 Listening on ${port}`))
 
 
