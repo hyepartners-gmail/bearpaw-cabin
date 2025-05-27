@@ -4,7 +4,11 @@ import path from 'path'
 import { Datastore } from '@google-cloud/datastore'
 
 const app = express()
-const ds  = new Datastore()
+// const ds  = new Datastore()
+
+const ds = new Datastore({
+  namespace: 'bearpaw-cabin',
+})
 
 app.use(express.json())
 
