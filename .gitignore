@@ -40,6 +40,11 @@ downloads/
 eggs/
 .eggs/
 lib/
+
+#–– allow our src/lib folder ––
+!src/lib/
+!src/lib/**
+
 lib64/
 parts/
 sdist/
