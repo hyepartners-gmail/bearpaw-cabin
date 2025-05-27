@@ -1,38 +1,57 @@
 // server.js
 import express from 'express'
-import path from 'path'
+import path    from 'path'
 import { Datastore } from '@google-cloud/datastore'
-import process from 'process'
-
-console.log('ENV:',
-  'GOOGLE_CLOUD_PROJECT=', process.env.GOOGLE_CLOUD_PROJECT,
-  'GCP_PROJECT=',           process.env.GCP_PROJECT,
-  'GOOGLE_PROJECT_ID=',     process.env.GOOGLE_PROJECT_ID,
-)
 
 const app = express()
-// const ds  = new Datastore()
+app.use(express.json())
 
-// const ds = new Datastore({
-//   namespace: 'bearpaw-cabin'
-// })
+// ⚡️ HARD-CODED projectId + namespace
+const ds = new Datastore({
+  projectId: 'hyepartners-324923474516',  // ← your real project ID here
+  namespace: 'bearpaw-cabin',
+})
 
-const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'YOUR-PROJECT-ID'
-const ds = new Datastore({ projectId, namespace: 'bearpaw-cabin' })
+ds.getProjectId()
+  .then(pid => console.log(`⚡️ Datastore client: project=${pid} namespace=${ds.namespace}`))
+  .catch(err => console.error('❌ Failed to detect project id:', err))
 
 
-console.log(
-  '⚡️ Datastore client:',
-  'project=', ds.projectId,    // should now show the real project
-  'namespace=', ds.namespace
-)
+  // // server.js
+// import express from 'express'
+// import path from 'path'
+// import { Datastore } from '@google-cloud/datastore'
+// import process from 'process'
 
-// // Now fetch the real project id from the metadata / env
-// ds.getProjectId().then(pid => {
-//   console.log(`⚡️ Datastore client: project=${pid}  namespace=${ds.namespace}`)
-// }).catch(err => {
-//   console.error('❌ Failed to detect project id:', err)
-// })
+// console.log('ENV:',
+//   'GOOGLE_CLOUD_PROJECT=', process.env.GOOGLE_CLOUD_PROJECT,
+//   'GCP_PROJECT=',           process.env.GCP_PROJECT,
+//   'GOOGLE_PROJECT_ID=',     process.env.GOOGLE_PROJECT_ID,
+// )
+
+// const app = express()
+// // const ds  = new Datastore()
+
+// // const ds = new Datastore({
+// //   namespace: 'bearpaw-cabin'
+// // })
+
+// const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'YOUR-PROJECT-ID'
+// const ds = new Datastore({ projectId, namespace: 'bearpaw-cabin' })
+
+
+// console.log(
+//   '⚡️ Datastore client:',
+//   'project=', ds.projectId,    // should now show the real project
+//   'namespace=', ds.namespace
+// )
+
+// // // Now fetch the real project id from the metadata / env
+// // ds.getProjectId().then(pid => {
+// //   console.log(`⚡️ Datastore client: project=${pid}  namespace=${ds.namespace}`)
+// // }).catch(err => {
+// //   console.error('❌ Failed to detect project id:', err)
+// // })
 
 app.use(express.json())
 
