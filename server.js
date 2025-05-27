@@ -2,20 +2,37 @@
 import express from 'express'
 import path from 'path'
 import { Datastore } from '@google-cloud/datastore'
+import process from 'process'
+
+console.log('ENV:',
+  'GOOGLE_CLOUD_PROJECT=', process.env.GOOGLE_CLOUD_PROJECT,
+  'GCP_PROJECT=',           process.env.GCP_PROJECT,
+  'GOOGLE_PROJECT_ID=',     process.env.GOOGLE_PROJECT_ID,
+)
 
 const app = express()
 // const ds  = new Datastore()
 
-const ds = new Datastore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT,
-  namespace: 'bearpaw-cabin',
-})
+// const ds = new Datastore({
+//   namespace: 'bearpaw-cabin'
+// })
+
+const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'YOUR-PROJECT-ID'
+const ds = new Datastore({ projectId, namespace: 'bearpaw-cabin' })
+
 
 console.log(
-  '⚡️ Datastore client:', 
-  'project=', ds.projectId, 
+  '⚡️ Datastore client:',
+  'project=', ds.projectId,    // should now show the real project
   'namespace=', ds.namespace
 )
+
+// // Now fetch the real project id from the metadata / env
+// ds.getProjectId().then(pid => {
+//   console.log(`⚡️ Datastore client: project=${pid}  namespace=${ds.namespace}`)
+// }).catch(err => {
+//   console.error('❌ Failed to detect project id:', err)
+// })
 
 app.use(express.json())
 
@@ -94,7 +111,12 @@ app.patch('/api/needs_items/:id',  async (req, res) => { await update('needs_ite
 app.delete('/api/needs_items/:id', async (req, res) => { await remove('needs_items', req.params.id); res.sendStatus(204) })
 
 // ── TOOLS ITEMS ───────────────────────────────────────────────────────────────
-app.get('/api/tools',        async (req, res) => res.json(await list('tools')))
+// app.get('/api/tools',        async (req, res) => res.json(await list('tools')))
+app.get('/api/tools', async (req, res) => {
+  const items = await list('tools')
+  console.log('🛠 TOOLS query results:', items)
+  res.json(items)
+})
 app.get('/api/tools/:id',    async (req, res) => res.json(await getOne('tools', req.params.id)))
 app.post('/api/tools',       async (req, res) => res.json(await create('tools', req.body)))
 app.patch('/api/tools/:id',  async (req, res) => { await update('tools', req.params.id, req.body); res.sendStatus(204) })
