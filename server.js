@@ -7,8 +7,15 @@ const app = express()
 // const ds  = new Datastore()
 
 const ds = new Datastore({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT,
   namespace: 'bearpaw-cabin',
 })
+
+console.log(
+  '⚡️ Datastore client:', 
+  'project=', ds.projectId, 
+  'namespace=', ds.namespace
+)
 
 app.use(express.json())
 
