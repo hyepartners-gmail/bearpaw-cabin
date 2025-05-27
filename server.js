@@ -91,9 +91,13 @@ app.delete('/api/tools/:id', async (req, res) => { await remove('tools', req.par
 
 // ── STATIC + CATCH-ALL ────────────────────────────────────────────────────────
 const buildDir = path.join(process.cwd(), 'dist')
+// app.use(express.static(buildDir))
+// app.get('/*', (req, res) => res.sendFile(path.join(buildDir, 'index.html')))
 app.use(express.static(buildDir))
-app.get('/*', (req, res) => res.sendFile(path.join(buildDir, 'index.html')))
-
+// serve index.html on any GET path
+app.get(/.*/, (req, res) =>
+  res.sendFile(path.join(buildDir, 'index.html'))
+)
 // ── START SERVER ─────────────────────────────────────────────────────────────
 // const port = process.env.PORT || 8080
 const port = parseInt(process.env.PORT ?? '8080', 10)
