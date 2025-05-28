@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNeedsItems, NeedsItem } from "@/hooks/use-needs-items"; // Import NeedsItem type
-import {
+import { useNeedsItems, useDeleteNeedsItem, NeedsItem } from "@/hooks/use-needs-items";import {
   Table,
   TableBody,
   TableCell,
@@ -36,26 +35,28 @@ const Needs = () => {
     setSelectedItem(null); // Clear selected item
   };
 
-  const deleteItemMutation = useMutation({
-    mutationFn: async (itemId: string) => {
-      const { error } = await supabase
-        .from('needs_items')
-        .delete()
-        .eq('id', itemId);
+  // const deleteItemMutation = useMutation({
+  //   mutationFn: async (itemId: string) => {
+  //     const { error } = await supabase
+  //       .from('needs_items')
+  //       .delete()
+  //       .eq('id', itemId);
 
-      if (error) {
-        console.error("Error deleting needs item:", error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['needsItems'] }); // Invalidate query to refetch
-      showSuccess("Need item deleted successfully!");
-    },
-    onError: (error) => {
-      showError(`Failed to delete need item: ${error.message}`);
-    },
-  });
+  //     if (error) {
+  //       console.error("Error deleting needs item:", error);
+  //       throw error;
+  //     }
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['needsItems'] }); // Invalidate query to refetch
+  //     showSuccess("Need item deleted successfully!");
+  //   },
+  //   onError: (error) => {
+  //     showError(`Failed to delete need item: ${error.message}`);
+  //   },
+  // });
+
+  const deleteItemMutation = useDeleteNeedsItem();
 
   const handleDelete = (item: NeedsItem) => {
     if (window.confirm(`Are you sure you want to delete "${item.description}"?`)) {

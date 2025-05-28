@@ -1,9 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { showSuccess, showError } from "@/utils/toast";
 import { NeedsItem } from "@/hooks/use-needs-items"; // Import the type
+import { useUpdateNeedsItem } from "@/hooks/use-needs-items";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +35,6 @@ interface EditNeedsItemFormProps {
 }
 
 const EditNeedsItemForm: React.FC<EditNeedsItemFormProps> = ({ item, onSuccess }) => {
-  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,33 +45,22 @@ const EditNeedsItemForm: React.FC<EditNeedsItemFormProps> = ({ item, onSuccess }
     },
   });
 
-  const updateItemMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
-      const { data, error } = await supabase
-        .from('needs_items')
-        .update(values) // values now includes quantity
-        .eq('id', item.id); // Update the specific item by ID
-
-      if (error) {
-        console.error("Error updating needs item:", error);
-        throw error;
-      }
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['needsItems'] });
-      showSuccess("Need item updated successfully!");
-      onSuccess(); // Call the onSuccess prop to close dialog and refetch
-    },
-    onError: (error) => {
-      showError(`Failed to update need item: ${error.message}`);
-    },
-  });
+  const updateItemMutation = useUpdateNeedsItem();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with values:", values);
-    updateItemMutation.mutate(values);
+    updateItemMutation.mutate(
+      {
+        id: item.id,
+        data: values
+      },
+      {
+        onSuccess: () => {
+          onSuccess()
+        }
+      }
+    )
   }
+
 
   return (
     <Form {...form}>

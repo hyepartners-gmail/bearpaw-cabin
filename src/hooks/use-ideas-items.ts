@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, QueryKey } from '@tanstack/react-query'
 import { useApi } from '@/hooks/useApi'
 import { showSuccess, showError } from '@/utils/toast'
 
@@ -38,6 +38,7 @@ export const useAddIdeasItem = () => {
   })
 }
 
+/** Update */
 export const useUpdateIdeasItem = () => {
   const { updateIdeasItem } = useApi()
   const qc = useQueryClient()
@@ -45,19 +46,20 @@ export const useUpdateIdeasItem = () => {
   return useMutation<
     void,                                                   // TData
     Error,                                                  // TError
-    { id: string; data: Partial<Omit<IdeasItem, 'id'|'created_at'>> } // TVariables
+    { id: string; data: Partial<Omit<IdeasItem, 'id' | 'created_at'>> } // TVariables
   >({
     mutationFn: ({ id, data }) => updateIdeasItem(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ideasItems'] })
       showSuccess('Idea item updated!')
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       showError(`Failed to update idea: ${err.message}`)
     },
   })
 }
 
+/** Delete */
 export const useDeleteIdeasItem = () => {
   const { deleteIdeasItem } = useApi()
   const qc = useQueryClient()
@@ -65,18 +67,19 @@ export const useDeleteIdeasItem = () => {
   return useMutation<
     void,       // TData
     Error,      // TError
-    string      // TVariables
+    string      // TVariables = id
   >({
-    mutationFn: deleteIdeasItem,
+    mutationFn: (id) => deleteIdeasItem(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ideasItems'] })
       showSuccess('Idea item deleted!')
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       showError(`Failed to delete idea: ${err.message}`)
     },
   })
 }
+
 
 
 // // src/hooks/use-ideas-items.ts

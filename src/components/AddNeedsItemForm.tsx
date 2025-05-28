@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { showSuccess, showError } from "@/utils/toast";
+import { useAddNeedsItem, NeedsItem } from "@/hooks/use-needs-items"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,6 @@ interface AddNeedsItemFormProps {
 }
 
 const AddNeedsItemForm: React.FC<AddNeedsItemFormProps> = ({ onSuccess }) => {
-  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,32 +44,16 @@ const AddNeedsItemForm: React.FC<AddNeedsItemFormProps> = ({ onSuccess }) => {
     },
   });
 
-  const addItemMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
-      const { data, error } = await supabase
-        .from('needs_items')
-        .insert([values]); // values now includes quantity
+  const addItemMutation = useAddNeedsItem();
 
-      if (error) {
-        console.error("Error inserting needs item:", error);
-        throw error;
-      }
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['needsItems'] });
-      showSuccess("Need item added successfully!");
-      onSuccess(); // Call the onSuccess prop to close dialog and refetch
-    },
-    onError: (error) => {
-      showError(`Failed to add need item: ${error.message}`);
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with values:", values);
-    addItemMutation.mutate(values);
-  }
+function onSubmit(values: z.infer<typeof formSchema>) {
+  addItemMutation.mutate(
+     values as Omit<NeedsItem, 'id' | 'created_at'>,
+     {
+       onSuccess: () => onSuccess()
+     }
+   )
+}
 
   return (
     <Form {...form}>

@@ -28,49 +28,41 @@ const formSchema = z.object({
   notes: z.string().nullable().optional(), // Added optional notes field to schema
 });
 
+type FormValues = z.infer<typeof formSchema>
+
 interface EditIdeasItemFormProps {
   item: IdeasItem;
   onSuccess: () => void;
 }
 
-const EditIdeasItemForm: React.FC<EditIdeasItemFormProps> = ({ item, onSuccess }) => {
-  const queryClient = useQueryClient();
-
-  const form = useForm<z.infer<typeof formSchema>>({
+export default function EditIdeasItemForm({
+  item,
+  onSuccess,
+}: EditIdeasItemFormProps) {
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: item.description,
       price: item.price,
-      notes: item.notes, // Set default notes from item
+      notes: item.notes,
     },
-  });
+  })
 
-  const updateItemMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
-      const { data, error } = await supabase
-        .from('ideas_items')
-        .update(values) // values now includes price and notes
-        .eq('id', item.id); // Update the specific item by ID
+  const update = useUpdateIdeasItem()
 
-      if (error) {
-        console.error("Error updating ideas item:", error);
-        throw error;
+  function onSubmit(values: FormValues) {
+    update.mutate(
+      { id: item.id, data: values },
+      {
+        onSuccess: () => {
+          showSuccess("Idea item updated successfully!")
+          onSuccess()
+        },
+        onError: (err) => {
+          showError(`Failed to update idea: ${err.message}`)
+        },
       }
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ideasItems'] });
-      showSuccess("Idea item updated successfully!");
-      onSuccess(); // Call the onSuccess prop to close dialog and refetch
-    },
-    onError: (error) => {
-      showError(`Failed to update idea item: ${error.message}`);
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with values:", values);
-    updateItemMutation.mutate(values);
+    )
   }
 
   return (
@@ -83,7 +75,7 @@ const EditIdeasItemForm: React.FC<EditIdeasItemFormProps> = ({ item, onSuccess }
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Add a fire pit" {...field} />
+                <Input {...field} placeholder="e.g., Add a fire pit" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,31 +88,34 @@ const EditIdeasItemForm: React.FC<EditIdeasItemFormProps> = ({ item, onSuccess }
             <FormItem>
               <FormLabel>Price (Optional)</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" placeholder="e.g., 500.00" {...field} value={field.value ?? ''} />
+                <Input
+                  {...field}
+                  type="number"
+                  step="0.01"
+                  placeholder="e.g., 500.00"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField // Added notes textarea field
+        <FormField
           control={form.control}
           name="notes"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Notes (Optional)</FormLabel>
               <FormControl>
-                <Textarea placeholder="Add any relevant notes here..." {...field} value={field.value ?? ''} />
+                <Textarea {...field} placeholder="Any notes…" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={updateItemMutation.isPending}>
-          {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
+        <Button type="submit" disabled={update.isLoading}>
+          {update.isLoading ? "Saving…" : "Save Changes"}
         </Button>
       </form>
     </Form>
-  );
-};
-
-export default EditIdeasItemForm;
+  )
+}
