@@ -16,69 +16,54 @@ ds.getProjectId()
   .then(pid => console.log(`⚡️ Datastore client: project=${pid} namespace=${ds.namespace}`))
   .catch(err => console.error('❌ Failed to detect project id:', err))
 
-
-  // // server.js
-// import express from 'express'
-// import path from 'path'
-// import { Datastore } from '@google-cloud/datastore'
-// import process from 'process'
-
-// console.log('ENV:',
-//   'GOOGLE_CLOUD_PROJECT=', process.env.GOOGLE_CLOUD_PROJECT,
-//   'GCP_PROJECT=',           process.env.GCP_PROJECT,
-//   'GOOGLE_PROJECT_ID=',     process.env.GOOGLE_PROJECT_ID,
-// )
-
-// const app = express()
-// // const ds  = new Datastore()
-
-// // const ds = new Datastore({
-// //   namespace: 'bearpaw-cabin'
-// // })
-
-// const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'YOUR-PROJECT-ID'
-// const ds = new Datastore({ projectId, namespace: 'bearpaw-cabin' })
-
-
-// console.log(
-//   '⚡️ Datastore client:',
-//   'project=', ds.projectId,    // should now show the real project
-//   'namespace=', ds.namespace
-// )
-
-// // // Now fetch the real project id from the metadata / env
-// // ds.getProjectId().then(pid => {
-// //   console.log(`⚡️ Datastore client: project=${pid}  namespace=${ds.namespace}`)
-// // }).catch(err => {
-// //   console.error('❌ Failed to detect project id:', err)
-// // })
+const {KEY} = Datastore;
 
 app.use(express.json())
 
-// ── COMMON HELPERS ─────────────────────────────────────────────────────────────
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
 function toKey(kind, id) {
   return ds.key([kind, typeof id === 'string' ? parseInt(id, 10) : id])
 }
+
 async function list(kind, orderBy = 'created_at') {
   const query = ds.createQuery(kind).order(orderBy, { descending: true })
   const [entities] = await ds.runQuery(query)
-  return entities
+  return entities.map(entity => {
+    // extract the auto-generated id
+    const key = entity[KEY]
+    const id  = key.id || key.name
+    // pull out the key sentinel so we don’t leak it
+    const { [KEY]: _, ...props } = entity
+    return { id, ...props }
+  })
 }
-async function getOne(kind, id) {
-  const [entity] = await ds.get(toKey(kind, id))
-  return entity
-}
+
 async function create(kind, data) {
-  const key = ds.key(kind)
-  await ds.save({ key, data })
-  return { id: key.id }
+  // stamp a created_at so ordering actually works
+  const timestamp = new Date().toISOString()
+  const record    = { ...data, created_at: timestamp }
+  const key       = ds.key(kind)
+  await ds.save({ key, data: record })
+  return { id: key.id, ...record }
 }
+
 async function update(kind, id, data) {
   await ds.save({ key: toKey(kind, id), data })
 }
+
 async function remove(kind, id) {
   await ds.delete(toKey(kind, id))
 }
+
+async function getOne(kind, id) {
+  const [entity] = await ds.get(toKey(kind, id));
+  if (!entity) return null;
+  const key = entity[KEY];
+  const record = (({ [KEY]: _, ...props }) => props)(entity);
+  return { id: key.id || key.name, ...record };
+}
+
 
 // ── BUDGET ITEMS ──────────────────────────────────────────────────────────────
 app.get('/api/budget_items',        async (req, res) => res.json(await list('budget_items')))
@@ -145,11 +130,15 @@ app.delete('/api/tools/:id', async (req, res) => { await remove('tools', req.par
 const buildDir = path.join(process.cwd(), 'dist')
 // app.use(express.static(buildDir))
 // app.get('/*', (req, res) => res.sendFile(path.join(buildDir, 'index.html')))
+app.use('/api', apiRouter);
+
 app.use(express.static(buildDir))
+app.get('/*', (_req, res) => res.sendFile(path.join(buildDir, 'index.html')));
+
 // serve index.html on any GET path
-app.get(/.*/, (req, res) =>
-  res.sendFile(path.join(buildDir, 'index.html'))
-)
+// app.get(/.*/, (req, res) =>
+//   res.sendFile(path.join(buildDir, 'index.html'))
+// )
 // ── START SERVER ─────────────────────────────────────────────────────────────
 // const port = process.env.PORT || 8080
 const port = parseInt(process.env.PORT ?? '8080', 10)
