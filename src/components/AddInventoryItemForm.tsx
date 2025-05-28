@@ -66,6 +66,8 @@ export default function AddInventoryItemForm({ onSuccess }: Props) {
       state: null,
       replacement_date: null,
     },
+    mode: 'onChange',        
+    reValidateMode: 'onChange',
   })
   const { type } = form.watch()
 
@@ -101,9 +103,7 @@ export default function AddInventoryItemForm({ onSuccess }: Props) {
   })
 
     const onSubmit = (values: FormValues) => {
-      if (form.formState.isValid) {
         addItemMutation.mutate(values)
-      }
     }
 
   return (
