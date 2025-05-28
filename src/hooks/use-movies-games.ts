@@ -42,14 +42,28 @@ export const useUpdateMovieGameItem = () => {
   const { updateMovieGameItem } = useApi()
   const qc = useQueryClient()
 
-  return useMutation({
-    mutationFn: updateMovieGameItem,
+  return useMutation<
+    void,                                         // TData
+    Error,                                        // TError
+    {                                           // TVariables
+      id: string
+      name: string
+      type: 'VHS' | 'DVD' | 'Game'
+      players: string | null
+    }
+  >({
+    mutationFn: ({ id, name, type, players }) =>
+      updateMovieGameItem(id, {
+        name,
+        type,
+        players: type === 'Game' ? players : null,
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['movieGameItems'] })
       showSuccess('Item updated successfully!')
     },
-    onError: (error: Error) => {
-      showError(`Failed to update item: ${error.message}`)
+    onError: (err) => {
+      showError(`Failed to update item: ${err.message}`)
     },
   })
 }

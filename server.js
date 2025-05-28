@@ -49,8 +49,25 @@ async function create(kind, data) {
 }
 
 async function update(kind, id, data) {
-  await ds.save({ key: toKey(kind, id), data })
+  const key = toKey(kind, id)
+
+  // 1) fetch the existing record
+  const [existing] = await ds.get(key)
+  if (!existing) {
+    throw new Error(`Entity not found: ${kind}/${id}`)
+  }
+
+  // 2) strip out the internal Datastore key prop and merge
+  const { [KEY]: _, ...props } = existing
+  const merged = {
+    ...props,      // keeps created_at + any other fields you didn’t touch
+    ...data        // applies only your updates
+  }
+
+  // 3) write the merged object back
+  await ds.save({ key, data: merged })
 }
+
 
 async function remove(kind, id) {
   await ds.delete(toKey(kind, id))
