@@ -209,15 +209,14 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
+                  <FormControl>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value ?? undefined}
                 >
-                  <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
                     </SelectTrigger>
-                  </FormControl>
                   <SelectContent>
                     <SelectItem value="Clean">Clean</SelectItem>
                     <SelectItem value="Dirty">Dirty</SelectItem>
@@ -225,6 +224,7 @@ const EditInventoryItemForm: React.FC<EditInventoryItemFormProps> = ({ item, onS
                     <SelectItem value="Broken">Broken</SelectItem>
                   </SelectContent>
                 </Select>
+                  </FormControl>
                 <FormMessage />
               </FormItem>
             )}
