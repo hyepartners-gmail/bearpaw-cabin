@@ -47,9 +47,21 @@ const EditToolItemForm: React.FC<EditToolItemFormProps> = ({ item, onSuccess }) 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Form submitted with values:", values);
-    updateItemMutation.mutate({ ...values, id: item.id }, {
-      onSuccess: onSuccess,
-    });
+     updateItemMutation.mutate(
+   { 
+     id: item.id, 
+     data: {
+       name:        values.name,
+       quantity:    values.quantity,
+       electric:    values.electric,
+       consumable:  values.consumable,
+     }
+   },
+   { onSuccess }
+ )
+    // updateItemMutation.mutate({ ...values, id: item.id }, {
+    //   onSuccess: onSuccess,
+    // });
   }
 
   return (
